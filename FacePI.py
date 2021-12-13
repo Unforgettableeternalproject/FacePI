@@ -1,52 +1,32 @@
 #!/usr/bin/env python
 
 import sys, os, json, time, fire
-import ClassUtils as Utils
+import http.client, urllib.request, urllib.parse, urllib.error, base64
 
 basepath = os.path.dirname(os.path.realpath(__file__))
-config = Utils.loadConfig()
-personGroupId = config['personGroupId']
-api_key = config['api_key']
-host = config['host']
-
+configpath = os.path.join(basepath, 'Config.json')
 
 class FacePI:
     
-    def Config(self):
+    def writeConfig(self, config):
+        with open(configpath, 'w', encoding='utf-8') as f:
+            json.dump(config, f)
 
-        '''Json Settings.'''
+    def readConfig(self):
+        if not os.path.exists(configpath):
+            config = dict()
+            config['api_key'] = "b9160fbd882f47bd821205a4bce64354"
+            config['host'] = "eastasia.api.cognitive.microsoft.com"
+            config['confidence'] = 0.6
+            config['title'] = '測試API程式'
+            config['personGroupName'] = '人群名稱'
+            config['personGroupID'] = 'default_personGroupID'
+            self.writeConfig(config)
 
-        api_key = input('Enter API Key:[' + config['api_key'] + ']:')
-        if api_key != '':
-            config['api_key'] = api_key
-        host = input("Identifying Host...[" + config['host'] + "]: ")
-        if host != '':
-            config['host'] = host
-        title = input("Enter title:[" + config['title'] + "]：")
-        if title != '':
-            config['title'] = title
-        personGroupId = input(
-            "Default personGroupId:[" + config['personGroupId'] + "]：")
-        if personGroupId != '':
-            config['personGroupId'] = personGroupId
-        confidence = input("Default confidence:[" + str(config['confidence']) + "]：")
-        if confidence != '':
-            config['confidence'] = float(confidence)
-        landmark = input("Default face landmark set value:[" + str(config['landmark']) + "]：")
-        if landmark != '':
-            config['landmark'] = int(landmark)
-        videoid = input("Camara Id:[" + str(config['videoid']) + "]：")
-        if videoid != '':
-            config['videoid'] = int(videoid)
-
-        with open(basepath + '/Config.json', 'w', encoding='utf-8') as outfile:
-            json.dump(config, outfile, ensure_ascii=False)
-
-    def setAPIKEY(self, api_key):
-        ''' API fast settings. '''
-        config['api_key'] = api_key
-        with open(basepath + '/Config.json', 'w', encoding='utf-8') as outfile:
-            json.dump(config, outfile, ensure_ascii=False)
+        with open(configpath, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        return config
+        
 
     def detectImageUrl(self, imageurl):
         headers = {
@@ -78,5 +58,12 @@ class FacePI:
 
             return json_face_detect
 
-            except Exception as e:
-                print("[Error {0}]Connection Failed {1}", format(e.errno, estrerror))
+        except Exception as e:
+            print("[Error {0}]Connection Failed {1}".format(e.errno, e.strerror))
+
+        def Signin(self):
+            imageurl = 'https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTE4MDAzNDEwNzg5ODI4MTEw/barack-obama-12782369-1-402.jpg'
+            self.detectImageUrl(imageurl)
+
+if __name__ == '__main__':
+    fire.Fire(FacePI)

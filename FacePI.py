@@ -17,11 +17,11 @@ class FacePI:
         self.detect = IncludedClasses.ClassFacePI.Face()
 
     def Signin(self):
-#        imageurl = 'https://upload.wikimedia.org/wikipedia/commons/1/18/Mark_Zuckerberg_F8_2019_Keynote_%2832830578717%29_%28cropped%29.jpg'
-        imagepath = r'D:/Materials/Programs/Python/FacePI/LocalImages/Amazon.jpg'
+        imageurl = 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t1.15752-9/266785464_1258584021314938_5117372255658393059_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=ae9488&_nc_ohc=FRyIgWcoFM0AX_e2Pb-&_nc_ht=scontent.fkhh1-1.fna&oh=03_AVIHgJdbHOCJUzkVG7U_rQIykLTYZ7gIwD7TlFyAunT3ig&oe=61E808E9'
+#        imagepath = r'D:/Materials/Programs/Python/FacePI/LocalImages/Amazon.jpg'
 
-#        self.detect.detectImageUrl(imageurl)
-        self.detect.detectLocalImage(imagepath)
+        self.detect.detectImageUrl(imageurl)
+#        self.detect.detectLocalImage(imagepath)
 
 # show_opencv()
 pi = FacePI()

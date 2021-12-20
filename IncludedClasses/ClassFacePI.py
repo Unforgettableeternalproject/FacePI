@@ -67,6 +67,7 @@ class Face:
             response = conn.getresponse()
             data = response.read()
             json_face_detect = json.loads(str(data, 'UTF-8'))
+            print("detectLocalImage.faces=", json_face_detect)
             conn.close()
 
             print("detectImageUrl:",

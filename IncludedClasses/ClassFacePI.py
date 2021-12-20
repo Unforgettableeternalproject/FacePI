@@ -74,4 +74,4 @@ class Face:
             return json_face_detect
             
         except Exception as e:
-            print("[Errno {0}]連線失敗！請檢查網路設定。 {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed {1}".format(e.errno, e.strerror))

@@ -9,20 +9,19 @@ configpath = os.path.join(basepath, 'Config.json')
 
 class FacePI:
     
-    def __init__(self) -> None:
-        self.detectIU = IncludedClasses.ClassFacePI.Face().detectImageUrl()
-        self.detectLI = IncludedClasses.ClassFacePI.Face().detectLocalImage()
+    def __init__(self):
+        self.detect = IncludedClasses.ClassFacePI.Face()
 
     def Signin(self):
-        imageurl = 'https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTE4MDAzNDEwNzg5ODI4MTEw/barack-obama-12782369-1-402.jpg'
-#        imagepath = r'C:/Users/user/Desktop/Bernie/FacePII/barack-obama-12782369-1-402.jpg'
+        imageurl = 'https://upload.wikimedia.org/wikipedia/commons/1/18/Mark_Zuckerberg_F8_2019_Keynote_%2832830578717%29_%28cropped%29.jpg'
+#        imagepath = r'C:/Users/user/Desktop/Bernie/FacePI/SomeGuyOnTheInternet.jpg'
 
-        self.detectIU(imageurl)
- #       self.detectLI(imagepath)
+        self.detect.detectImageUrl(imageurl)
+#        self.detect.detectLocalImage(imagepath)
 
 pi = FacePI()
 
 pi.Signin()
 
-if __name__ == '__main__':
-    fire.Fire(FacePI)
+#if __name__ == '__main__':
+#    fire.Fire(FacePI)

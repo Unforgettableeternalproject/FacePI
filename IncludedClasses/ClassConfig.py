@@ -2,7 +2,7 @@ import sys, os, json
 
 class Config:
 
-    def __init__(self) -> None:
+    def __init__(self):
         basepath = os.path.dirname(os.path.realpath(__file__))
         self.configpath = os.path.join(basepath, 'Config.json') 
 

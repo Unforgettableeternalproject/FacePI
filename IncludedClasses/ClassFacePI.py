@@ -2,13 +2,13 @@ import http.client, urllib.request, urllib.parse, urllib.error, json
 import IncludedClasses.ClassConfig
 
 class Face:
-    def __init__(self) -> None:
-        self.config = IncludedClasses.ClassConfig.Config().readConfig()
+    def __init__(self):
+        self.config = IncludedClasses.ClassConfig.Config()
 
     def detectLocalImage(self, imagepath):
         headers = {
             'Content-Type': 'application/octet-stream',
-            'Ocp-Apim-Subscription-Key': self.config()['api_key'],
+            'Ocp-Apim-Subscription-Key': self.config.readConfig()['api_key'],
         }
 
         params = urllib.parse.urlencode({
@@ -25,8 +25,8 @@ class Face:
         requestbody = open(imagepath, "rb").read()
 
         try:
-            conn = http.client.HTTPSConnection(self.config()['host'])
-            conn.request("POST", "/face/v1.0/detect?%s" % params. requestbody, headers)
+            conn = http.client.HTTPSConnection(self.config.readConfig()['host'])
+            conn.request("POST", "/face/v1.0/detect?%s" % params, requestbody, headers)
             response = conn.getresponse()
             data = response.read()
             json_face_detect = json.loads(str(data, 'UTF-8'))
@@ -43,7 +43,7 @@ class Face:
     def detectImageUrl(self, imageurl):
         headers = {
             'Content-Type': 'application/json',
-            'Ocp-Apie-Subscription-Key': self.config()['api_key'],
+            'Ocp-Apie-Subscription-Key': self.config.readConfig()['api_key'],
         }
 
         params = urllib.parse.urlencode({
@@ -59,7 +59,7 @@ class Face:
         print('imageurl=', imageurl)
         requestbody = '{"url": "' + imageurl + '"}'
         try:
-            conn = http.client.HTTPSConnection(self.config()['host'])
+            conn = http.client.HTTPSConnection(self.config.readConfig()['host'])
             conn.request("POST", "/face/v1.0/detect?%s" % params, requestbody, headers)
 
             response = conn.getresponse()

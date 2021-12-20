@@ -18,7 +18,7 @@ class FacePI:
 
     def Signin(self):
 #        imageurl = 'https://upload.wikimedia.org/wikipedia/commons/1/18/Mark_Zuckerberg_F8_2019_Keynote_%2832830578717%29_%28cropped%29.jpg'
-        imagepath = r'D:/Materials/Programs/Python/FacePI/LocalImages/YouSuck.jpg'
+        imagepath = r'D:/Materials/Programs/Python/FacePI/LocalImages/Amazon.jpg'
 
 #        self.detect.detectImageUrl(imageurl)
         self.detect.detectLocalImage(imagepath)

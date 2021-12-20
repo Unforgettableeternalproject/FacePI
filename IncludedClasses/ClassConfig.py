@@ -16,8 +16,8 @@ class Config:
             config['api_key'] = "b9160fbd882f47bd821205a4bce64354"
             config['host'] = "eastasia.api.cognitive.microsoft.com"
             config['confidence'] = 0.6
-            config['title'] = '測試API程式'
-            config['personGroupName'] = '人群名稱'
+            config['title'] = 'Test API Program'
+            config['personGroupName'] = 'GroupName'
             config['personGroupID'] = 'default_personGroupID'
             self.writeConfig(config)
 

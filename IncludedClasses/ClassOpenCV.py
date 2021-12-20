@@ -5,10 +5,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 import cv2
 import numpy as np
 
-config = IncludedClasses.ClassConfig.Config().readConfig()
+config = IncludedClasses.ClassConfig.Config()
 
 def getTakePicturePath(personGroupId):
-    ''' 取得拍照後要存檔的路徑。 '''
     basepath = os.path.dirname(os.path.realpath(__file__))
 
     jpgimagepath = os.path.join(
@@ -21,15 +20,14 @@ def getTakePicturePath(personGroupId):
 
 
 def show_opencv(hint='', mirror=True):
-    ''' 顯示主畫面 '''
 
     #cam = cv2.VideoCapture(config['videoid'])
     print('opening camara')
     cam = cv2.VideoCapture(0)
     print('cam opened')
-    cam.set(3, 1280)  # 修改解析度 寬
-    cam.set(4, 1280 // 16 * 9)  # 修改解析度 高
-    print('WIDTH', cam.get(3), 'HEIGHT', cam.get(4))  # 顯示預設的解析度
+    cam.set(3, 1280)  # resolution width
+    cam.set(4, 1280 // 16 * 9)  # resolution height
+    print('WIDTH', cam.get(3), 'HEIGHT', cam.get(4))
 
     while True:
         ret_val, img = cam.read()
@@ -42,15 +40,15 @@ def show_opencv(hint='', mirror=True):
         pil_im = Image.fromarray(cv2_im)
         draw = ImageDraw.Draw(pil_im)  #
 
-        ttf = "C:/Windows.old/Windows/Fonts/msjhbd.ttc"  # 字體: 微軟正黑體
+        ttf = "C:/Windows.old/Windows/Fonts/msjhbd.ttc"
 
         ##font = ImageFont.truetype(ttf, 40, encoding="utf-8")
         hintfont = ImageFont.truetype(ttf, 24, encoding="utf-8")
 
-        hints = "請按「ENTER」繼續" + hint
+        hints = "Press Enter to capture." + hint
         w, h = draw.textsize(hints, font=hintfont)
         draw.rectangle(
-            ((W / 2 - w / 2 - 5, H - h), (W / 2 + w / 2 + 5, H)), fill="red")
+            ((W / 2 - w / 2 - 5, H - h), (W / 2 + w / 2 + 5, H)), fill="blue")
         hintlocation = (W / 2 - w / 2, H - h)
         #textlocation = (0,0)
         draw.text(
@@ -70,7 +68,7 @@ def show_opencv(hint='', mirror=True):
         key = cv2.waitKey(1)
         if key == ord(' ') or key == 3 or key == 13:  # space or enter
             picturepath = getTakePicturePath(
-                config['personGroupId'])
+                config.readConfig()['personGroupId'])
             ret_val, img = cam.read()
             cv2.imwrite(picturepath, img)
             cv2.destroyAllWindows()
@@ -79,7 +77,7 @@ def show_opencv(hint='', mirror=True):
         elif key == 27:  # esc to quit
             cv2.destroyAllWindows()
             cv2.VideoCapture(0).release()
-            raise print("偵測到 esc 結束鏡頭")
+            raise print("Press ESC to quit.")
         else:
             if key != -1:
                 print('key=', key)

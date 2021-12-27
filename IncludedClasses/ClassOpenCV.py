@@ -11,7 +11,7 @@ def getTakePicturePath(personGroupId):
     basepath = os.path.dirname(os.path.realpath(__file__))
 
     jpgimagepath = os.path.join(
-        basepath, 'takepictures', personGroupId + "_" +
+        basepath, '../takepictures', personGroupId + "_" +
         time.strftime("%Y%m%d_%H%M%S", time.localtime()) + ".jpg")
 
     if not os.path.exists(os.path.dirname(jpgimagepath)):

@@ -72,7 +72,7 @@ def show_opencv(hint='', mirror=True):
             picturepath = getTakePicturePath(
                 config['personGroupID'])
             ret_val, img = cam.read()
-            cv2.imwrite('C:\資源、資料與資訊\Unforgettableeternalproject\FacePI\takenpictures\Test.jpg', img)
+            cv2.imwrite(picturepath, img)
             print('Success.')
             cv2.destroyAllWindows()
             cv2.VideoCapture(0).release()

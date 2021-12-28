@@ -43,7 +43,7 @@ class Face:
     def detectImageUrl(self, imageurl):
         headers = {
             # Request headers
-            'Content-Type': 'application/octet-stream',  # 用本地圖檔辨識
+            'Content-Type': 'application/octet-stream',
             'Ocp-Apim-Subscription-Key': self.config.readConfig()['api_key'],
         }
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os, json, time, fire
+from cv2 import waitKey
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 import IncludedClasses.ClassFacePI
 import IncludedClasses.ClassOpenCV
@@ -64,5 +65,7 @@ pi = FacePI()
 
 pi.Signin()
 
-#if __name__ == '__main__':
-#    fire.Fire(FacePI)
+cv2.waitKey(0.5)  
+
+if __name__ == '__main__':
+    fire.Fire(FacePI)

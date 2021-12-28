@@ -30,7 +30,7 @@ def show_opencv(hint='', mirror=True):
     print('cam opened')
     cam.set(3, 3000)
     cam.set(4, 2000 // 3 * 2)
-    print('WIDTH', cam.get(3), 'HEIGHT', cam.get(4))  # 顯示預設的解析度
+    print('WIDTH', cam.get(3), 'HEIGHT', cam.get(4))
 
     while True:
         ret_val, img = cam.read()
@@ -46,7 +46,7 @@ def show_opencv(hint='', mirror=True):
         ##font = ImageFont.truetype(ttf, 40, encoding="utf-8")
         hintfont = ImageFont.truetype(ttf, 24, encoding="utf-8")
 
-        hints = "Press Enter to Continue, " + hint
+        hints = "Press C to Continue, " + hint
         w, h = draw.textsize(hints, font=hintfont)
         draw.rectangle(
             ((W / 2 - w / 2 - 5, H - h), (W / 2 + w / 2 + 5, H)), fill="blue")
@@ -67,11 +67,13 @@ def show_opencv(hint='', mirror=True):
         #cv2.imshow("window", img)
 
         key = cv2.waitKey(1)
-        if key == ord(' ') or key == 3 or key == 13:  # space or enter
+        if key == ord('c') or key == 3 or key == 13:  # c or enter
+            print('Debug_Capture -> 1')
             picturepath = getTakePicturePath(
                 config['personGroupID'])
             ret_val, img = cam.read()
-            cv2.imwrite(picturepath, img)
+            cv2.imwrite('C:\資源、資料與資訊\Unforgettableeternalproject\FacePI\takenpictures\Test.jpg', img)
+            print('Success.')
             cv2.destroyAllWindows()
             cv2.VideoCapture(0).release()
             return picturepath
@@ -124,7 +126,7 @@ def show_ImageText(title, hint, facepath=None, picture=None, identifyfaces=None,
     cv2_text_im = cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
     cv2.imshow(windowname, cv2_text_im)
     key = cv2.waitKey(10000)
-    if key == ord(' ') or key == 3 or key == 13:  # space or enter
+    if key == ord('c') or key == 3 or key == 13:  # c or enter
         cv2.destroyWindow(windowname)
     elif key == ord('a') and len(identifyfaces) == 1: 
         cv2.destroyWindow(windowname)

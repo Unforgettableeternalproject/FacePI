@@ -54,7 +54,7 @@ class FacePI:
 
     def Signin(self):
 #        imageurl = 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t1.15752-9/266785464_1258584021314938_5117372255658393059_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=ae9488&_nc_ohc=FRyIgWcoFM0AX_e2Pb-&_nc_ht=scontent.fkhh1-1.fna&oh=03_AVIHgJdbHOCJUzkVG7U_rQIykLTYZ7gIwD7TlFyAunT3ig&oe=61E808E9'
-#        imagepath = r'C:/Users/user/Documents/FacePI/FacePI/LocalImages/AfterImage.jpg'
+#        imagepath = r'D:/Materials/Programs/Python/FacePI/LocalImages/CCC.jpg'
 
 #        self.detect.detectImageUrl(imageurl)
         imagepath = IncludedClasses.ClassOpenCV.show_opencv()
@@ -63,7 +63,7 @@ class FacePI:
 
 pi = FacePI()
 
-pi.Train()
+pi.Signin()
 
 cv2.waitKey(0)
 

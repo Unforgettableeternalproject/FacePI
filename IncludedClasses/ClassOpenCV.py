@@ -130,4 +130,4 @@ def show_ImageText(title, hint, facepath=None, picture=None, identifyfaces=None,
         cv2.destroyWindow(windowname)
     elif key == ord('a') and len(identifyfaces) == 1: 
         cv2.destroyWindow(windowname)
-        #ClassTK.tk_UnknownPerson('Who¡H', facepath, picture, personname)
+        #ClassTK.tk_UnknownPerson('Whoï¿½H', facepath, picture, personname)

@@ -1,5 +1,7 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64, json
 import IncludedClasses.ClassConfig
+import IncludedClasses.ClassPersonGroup
+
 config = IncludedClasses.ClassConfig.Config().readConfig()
 
 class Person:
@@ -65,7 +67,7 @@ class Person:
             "Ocp-Apim-Subscription-Key": self.api_key,
         }
 
-        params = urllib.parse.urlencode({"personGroupID": personGroupId})
+        params = urllib.parse.urlencode({"personGroupId": personGroupId})
         requestbody = '{"name":"' + name + '","userData":"' + userData + '"}'
 
         try:
@@ -91,23 +93,17 @@ class Person:
                     config["personGroupID"], config["personGroupName"], "group userdata"
                 )
                 return self.create_a_person(personGroupId, name, userData)
-        return create_a_person_json["personID"]
+        return create_a_person_json["personId"]
 
     def add_personimages(self, personGroupId, personname, userData,
                            imagepaths):
-        print("personname=", personname, "image path:", imagepaths)
-        person = self.getPersonByName(personGroupId, personname)
-        if person == None:
-            print('call create_a_person')
-            personid = self.create_a_person(personGroupId, personname,
-                                                 userData)
-            for imagepath in imagepaths:
-                self.add_a_person_face(imagepath, personid, personGroupId)
-        else:
-            print('call add_a_person_face, [personID =', person['personID'], ' ].')
-            for imagepath in imagepaths:
-                self.add_a_person_face(imagepath, person['personID'],
-                                            personGroupId)
+        print("personname=", personname, "imagepath:", imagepaths)
+        # person = self.getPersonByName(personGroupId, personname)
+        # if person == None:
+        print("call create_a_person")
+        personid = self.create_a_person(personGroupId, personname, userData)
+        for imagepath in imagepaths:
+            self.add_a_person_face(imagepath, personid, personGroupId)
 
     def get_a_person(self, personId, personGroupId):
         headers = {

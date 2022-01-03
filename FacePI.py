@@ -8,6 +8,7 @@ import IncludedClasses.ClassFacePI
 import IncludedClasses.ClassOpenCV
 import IncludedClasses.ClassPerson
 import IncludedClasses.ClassPersonGroup
+import IncludedClasses.ClassConfig
 
 basepath = os.path.dirname(os.path.realpath(__file__))
 configpath = os.path.join(basepath, 'Config.json')
@@ -35,10 +36,10 @@ class FacePI:
 
         jpgtrainpaths = []
         for jpgimagepath in jpgimagepaths:
+            basepath = os.path.dirname(os.path.realpath(__file__))
             filename = os.path.basename(jpgimagepath)
-            home = os.path.expanduser("~")
             jpgtrainpath = os.path.join(
-                home, "traindatas", userData, personname, filename
+                basepath, "traindatas", userData, personname, filename
             )
             if not os.path.exists(os.path.dirname(jpgtrainpath)):
                 os.makedirs(os.path.dirname(jpgtrainpath))
@@ -50,9 +51,10 @@ class FacePI:
         personAPI = IncludedClasses.ClassPerson.Person()
         personAPI.add_personimages(self.config.readConfig()['personGroupID'], personname, userData, jpgtrainpaths)
         personGroupapi = IncludedClasses.ClassPersonGroup.PersonGroup()
-        personGroupapi.train_personGroup(self.config.readConfig()['personGroupID'])
+        personGroupapi.train_personGroup()
 
     def Identify(self, pictureurl):
+
         start = int(round(time.time() * 1000))
         print("Start estimating [\"identify\"]")
         faceApi = IncludedClasses.ClassFacePI.Face()
@@ -75,21 +77,22 @@ class FacePI:
         print("Identify.detectfaces=", detectfaces)
 
         identifiedfaces = faceApi.identify(faceids[:10], self.config.readConfig()["personGroupID"])
-        print("Detected provided [\"identifyfaces\"] with amount of ", len(identifiedfaces))
+        print("Detected provided [\"identifyfaces\"] with amount of", len(identifiedfaces))
 
+        print(identifiedfaces)
         # successes = []
         for identifiedface in identifiedfaces:
             for candidate in identifiedface["candidates"]:
-                personId = candidate["personID"]
+                personId = candidate["personId"]
                 person = personApi.get_a_person(personId, self.config.readConfig()["personGroupID"])
                 identifiedface["person"] = person
                 identifiedface["confidence"] = candidate["confidence"]
-                identifiedface["personID"] = candidate["personID"]
+                identifiedface["personID"] = candidate["personId"]
 
         for identifyface in identifiedfaces:
             if "person" not in identifyface:
                 print("identifyface=", identifyface)
-                print("Can't identify the person, please do training first.")
+                print("Can't identify the faces, please do training first.")
             else:
                 name = identifyface["person"]["name"]
                 confidence = float(identifyface["confidence"])
@@ -102,6 +105,25 @@ class FacePI:
                 else:
                     print(name + "Signed in successfully." + f"[With a Confidence of {confidence}]")
 
+    def Debug(self):
+        
+        print("Debug Mode Activated, awaiting command...\n" + commandString[1])
+        answer = ''
+        while(answer != 'leave'):
+            print("Awiting command...\n")
+            answer = input()
+            if(answer == 'f_id'):
+                imagepath = IncludedClasses.ClassOpenCV.show_opencv()
+                self.detect.detectLocalImage(imagepath)
+            elif(answer == 'p_json'):
+                print("Printing Json File (config.json):\n")
+                print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
+            elif(answer == 'leave'):
+                pass
+            else:
+                print('Invaild command!\n' + commandString[1] + '\n')
+    
+        print('Leaving Debug Mode...\n')
 
     def Signin(self):
         imagepath = IncludedClasses.ClassOpenCV.show_opencv()
@@ -111,22 +133,25 @@ class FacePI:
 
 pi = FacePI()
 
-commandString = "\nAcceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n End Program: 'end'."
+commandString = ["\nAcceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n Enter Debug Mode: 'debug',\n End Program: 'end'.", "\nAcceptible Commands:\n Face_Identification: 'f_id',\n Print Config.json: 'p_json',\n Leave Debug Mode: 'leave'."]
 
 #Master
-print("Awiting command...\n" + commandString)
+print("Awiting command...\n" + commandString[0])
 answer = ''
 while(answer != 'end'):
+    print("Awiting command...\n")
     answer = input()
     if(answer == 'sign_in'):
         pi.Signin()
-    elif(answer == 'traing'):
+    elif(answer == 'train'):
         pi.Train()
+    elif(answer == 'debug'):
+        pi.Debug()
     elif(answer == 'end'):
         pass
     else:
-        print('Invaild command!\n' + commandString + '\n')
-
+        print('Invaild command!\n' + commandString[0] + '\n')
+    
 print('Program Ended.')
 
 cv2.waitKey(0)

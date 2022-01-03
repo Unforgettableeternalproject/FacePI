@@ -88,7 +88,7 @@ class Face:
         headers = {
             # Request headers
             "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Key": self.config["api_key"],
+            "Ocp-Apim-Subscription-Key": self.config.readConfig()["api_key"],
         }
 
         params = urllib.parse.urlencode({})
@@ -103,13 +103,13 @@ class Face:
             + """,
             "maxNumOfCandidatesReturned":1,
             "confidenceThreshold": """
-            + str(self.config["confidence"])
+            + str(self.config.readConfig()["confidence"])
             + """
         }"""
         )
         # print('requestbody=', requestbody)
         try:
-            conn = http.client.HTTPSConnection(self.config['host'])
+            conn = http.client.HTTPSConnection(self.config.readConfig()['host'])
             conn.request(
                 "POST", "/face/v1.0/identify?%s" % params, requestbody, headers
             )
@@ -128,7 +128,7 @@ class Face:
             if identifiedfaces['error']['code'] == 'PersonGroupNotFound':
                 personGroupAPI = IncludedClasses.ClassPersonGroup.PersonGroup()
                 personGroupAPI.createPersonGroup(
-                    personGroupId, self.config["personGroupName"], "group userdata"
+                    personGroupId, self.config.readConfig()["personGroupName"], "group userdata"
                 )
                 return self.identify(faceidkeys, personGroupId)
         return identifiedfaces

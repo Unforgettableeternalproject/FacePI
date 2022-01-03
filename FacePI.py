@@ -32,7 +32,7 @@ class FacePI:
             personname = input("Enter your name: ")
 
         if userData == None:
-            userData = input("Enter description for yourself (Ex: My Name Is Bernie.): ")
+            userData = input("Enter description for yourself (Ex: My Name Is Bernie): ")
 
         jpgtrainpaths = []
         for jpgimagepath in jpgimagepaths:
@@ -97,60 +97,81 @@ class FacePI:
                 name = identifyface["person"]["name"]
                 confidence = float(identifyface["confidence"])
                 if confidence >= 0.9:
-                    print(name + "Signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with SUCCULENT result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with SUCCULENT result.")
                 elif confidence >= 0.8:
-                    print(name + "Signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with Great result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with Great result.")
                 elif confidence >= 0.7:
-                    print(name + "Signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with good result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with good result.")
                 else:
-                    print(name + "Signed in successfully." + f"[With a Confidence of {confidence}]")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]")
 
     def Debug(self):
         
-        print("Debug Mode Activated, awaiting command...\n" + commandString[1])
+        print("Debug Mode Activated, awaiting command...\n")
         answer = ''
         while(answer != 'leave'):
-            print("Awiting command...\n")
+            print("Awiting command...\n" + commandString[1])
             answer = input()
-            if(answer == 'f_id'):
+            if(answer == 'f_dt'):
+                print('\n')
                 imagepath = IncludedClasses.ClassOpenCV.show_opencv()
                 self.detect.detectLocalImage(imagepath)
+                print('Returning to debug console...')
+            elif(answer == 'f_id_local'):
+                print('\n Require image path: ')
+                imagepath = input()
+                pi.Signin(imagepath)
+                print('Returning to debug console...')
+            elif(answer == 'f_id_url'):
+                print('\n Require image url: ')
+                imageurl = input()
+                pi.Signin(imageurl)
+                print('Returning to debug console...')
             elif(answer == 'p_json'):
+                print('\n')
                 print("Printing Json File (config.json):\n")
                 print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
             elif(answer == 'leave'):
                 pass
             else:
-                print('Invaild command!\n' + commandString[1] + '\n')
+                print('Invaild command!\n')
     
         print('Leaving Debug Mode...\n')
 
-    def Signin(self):
-        imagepath = IncludedClasses.ClassOpenCV.show_opencv()
+    def Signin(self, ip):
+        if(ip != ''):
+            imagepath = ip
+        else:
+            imagepath = IncludedClasses.ClassOpenCV.show_opencv()
         # json_face_detect = classes.ClassFaceAPI.Face().detectLocalImage(imagepath)
         self.Identify(imagepath)
 
 
 pi = FacePI()
 
-commandString = ["\nAcceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n Enter Debug Mode: 'debug',\n End Program: 'end'.", "\nAcceptible Commands:\n Face_Identification: 'f_id',\n Print Config.json: 'p_json',\n Leave Debug Mode: 'leave'."]
+commandString = ["\nAcceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n Enter Debug Mode: 'debug',\n End Program: 'end'.", 
+                "\nAcceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Leave Debug Mode: 'leave'."]
 
 #Master
-print("Awiting command...\n" + commandString[0])
 answer = ''
 while(answer != 'end'):
-    print("Awiting command...\n")
+    print("Awiting command...\n" + commandString[0])
     answer = input()
     if(answer == 'sign_in'):
-        pi.Signin()
+        print('\n')
+        pi.Signin('')
+        print('Returning to master console...')
     elif(answer == 'train'):
+        print('\n')
         pi.Train()
+        print('Returning to master console...')
     elif(answer == 'debug'):
+        print('\n')
         pi.Debug()
     elif(answer == 'end'):
         pass
     else:
-        print('Invaild command!\n' + commandString[0] + '\n')
+        print('Invaild command!\n')
     
 print('Program Ended.')
 

@@ -8,7 +8,7 @@ class Config:
 
     def writeConfig(self, config):
         with open(self.configpath, 'w', encoding='utf-8') as f:
-            json.dump(config, f)
+            json.dump(config, f) 
 
     def readConfig(self):
         if not os.path.exists(self.configpath):

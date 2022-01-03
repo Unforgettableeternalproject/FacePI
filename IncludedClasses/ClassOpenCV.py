@@ -37,7 +37,7 @@ def show_opencv(hint='', mirror=True):
         if mirror:
             img = cv2.flip(img, 1)
 
-        H, W = img.shape[:2]
+        height, width = img.shape[:2]
 
         cv2_im = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # 
         pil_im = Image.fromarray(cv2_im)
@@ -49,8 +49,8 @@ def show_opencv(hint='', mirror=True):
         hints = "Press C to Continue, " + hint
         w, h = draw.textsize(hints, font=hintfont)
         draw.rectangle(
-            ((W / 2 - w / 2 - 5, H - h), (W / 2 + w / 2 + 5, H)), fill="blue")
-        hintlocation = (W / 2 - w / 2, H - h)
+            ((width / 2 - w / 2 - 5, height - h), (width / 2 + w / 2 + 5, height)), fill="blue")
+        hintlocation = (width / 2 - w / 2, height - h)
         #textlocation = (0,0)
         draw.text(
             hintlocation, hints, (0, 255, 255),
@@ -130,4 +130,3 @@ def show_ImageText(title, hint, facepath=None, picture=None, identifyfaces=None,
         cv2.destroyWindow(windowname)
     elif key == ord('a') and len(identifyfaces) == 1: 
         cv2.destroyWindow(windowname)
-        #ClassTK.tk_UnknownPerson('Who�H', facepath, picture, personname)

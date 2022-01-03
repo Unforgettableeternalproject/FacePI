@@ -11,7 +11,7 @@ class PersonGroup:
     def train_personGroup(self):
         personGroupId=config["personGroupID"]
         print(
-            "train_personGroup: Starting training for a new personGroup [personGroupId = " + personGroupId + " ]."
+            "train_personGroup: Starting training for a new personGroup [personGroupID = " + personGroupId + " ]."
         )
 
         headers = {
@@ -35,3 +35,35 @@ class PersonGroup:
             conn.close()
         except Exception as e:
             print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+
+    def createPersonGroup(self, personGroupId, groupname, groupdata):
+        print("createPersonGroup: Create a personGroup ID [personGroupID = " + personGroupId + " ].")
+        headers = {
+            # Request headers.
+            "Content-Type": "application/json",
+            # NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription key.
+            "Ocp-Apim-Subscription-Key": self.api_key,
+        }
+
+        body = "{ 'name':'" + groupname + "', 'userData':'" + groupdata + "' }"
+
+        try:
+            conn = http.client.HTTPSConnection(self.host)
+            conn.request(
+                "PUT",
+                "/face/v1.0/persongroups/{}".format(personGroupId),
+                body.encode(encoding="utf-8"),
+                headers,
+            )
+            print("=============")
+            response = conn.getresponse()
+            data = response.read()
+            jsondata = json.loads(str(data, "UTF-8"))
+            print(jsondata)
+
+            print(response.reason)
+            conn.close()
+            self.train_personGroup()
+            return personGroupId
+        except Exception as e:
+            print(e.args)

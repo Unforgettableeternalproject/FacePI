@@ -9,7 +9,7 @@ class Person:
 
     def add_a_person_face(self, imagepath, personId, personGroupId):
         print(
-            "'add_a_person_face': put a person ID for a new registered person[personId = " + personId + " ]",
+            "'add_a_person_face': put a person ID for a new registered person [personID = " + personId + " ]",
             "imagepath=",
             imagepath,
         )
@@ -51,18 +51,9 @@ class Person:
         except Exception as e:
             print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
 
-        try:
-            if ClassUtils.isFaceAPIError(jsondata):
-                return []
-        except MyException.RateLimitExceededError as e:
-            time.sleep(10)
-            return self.add_a_person_face(imagepath, personId, personGroupId)
-        except MyException.UnspecifiedError as e:
-            return
-
     def create_a_person(self, personGroupId, name, userData):
         print(
-            "'create_a_person': creating a person [person name = "
+            "'create_a_person': creating a person [person_name = "
             + name
             + " ] inside a person group [personGroupID = "
             + personGroupId
@@ -74,7 +65,7 @@ class Person:
             "Ocp-Apim-Subscription-Key": self.api_key,
         }
 
-        params = urllib.parse.urlencode({"personGroupId": personGroupId})
+        params = urllib.parse.urlencode({"personGroupID": personGroupId})
         requestbody = '{"name":"' + name + '","userData":"' + userData + '"}'
 
         try:
@@ -92,22 +83,15 @@ class Person:
         except Exception as e:
             print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
 
-        try:
-            if ClassUtils.isFaceAPIError(create_a_person_json):
-                return []
-        except MyException.RateLimitExceededError as e:
-            time.sleep(10)
-            return self.create_a_person(personGroupId, name, userData)
-        except MyException.PersonGroupNotFoundError as e:
-            personGroupApi = PersonGroup(self.api_key, self.host)
-            personGroupApi.createPersonGroup(
-                config["personGroupId"], config["personGroupName"], "group userdata"
-            )
-            return self.create_a_person(personGroupId, name, userData)
-        except MyException.UnspecifiedError as e:
-            return
-
-        return create_a_person_json["personId"]
+        if "error" in create_a_person_json:
+            print("Error: " + create_a_person_json["error"]["code"])
+            if create_a_person_json["error"]["code"] == "PersonGroupNotFound":
+                personGroupApi = IncludedClasses.ClassPersonGroup.PersonGroup()
+                personGroupApi.createPersonGroup(
+                    config["personGroupID"], config["personGroupName"], "group userdata"
+                )
+                return self.create_a_person(personGroupId, name, userData)
+        return create_a_person_json["personID"]
 
     def add_personimages(self, personGroupId, personname, userData,
                            imagepaths):
@@ -120,7 +104,29 @@ class Person:
             for imagepath in imagepaths:
                 self.add_a_person_face(imagepath, personid, personGroupId)
         else:
-            print('call add_a_person_face, personId=', person['personId'])
+            print('call add_a_person_face, [personID =', person['personID'], ' ].')
             for imagepath in imagepaths:
-                self.add_a_person_face(imagepath, person['personId'],
+                self.add_a_person_face(imagepath, person['personID'],
                                             personGroupId)
+
+    def get_a_person(self, personId, personGroupId):
+        headers = {
+            # Request headers
+            'Ocp-Apim-Subscription-Key': self.api_key,
+        }
+
+        params = urllib.parse.urlencode({})
+
+        try:
+            conn = http.client.HTTPSConnection(self.host)
+            conn.request("GET", "/face/v1.0/persongroups/" + personGroupId +
+                         "/persons/" + personId + "?%s" % params, "{body}",
+                         headers)
+            response = conn.getresponse()
+            data = response.read()
+            personjson = json.loads(str(data, 'UTF-8'))
+            conn.close()
+            return personjson
+            
+        except Exception as e:
+            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))

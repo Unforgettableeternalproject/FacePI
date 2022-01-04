@@ -4,11 +4,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 import cv2
 import numpy as np
 import IncludedClasses.ClassConfig
+
 config = IncludedClasses.ClassConfig.Config().readConfig()
 
-
 ttf = "C:/Windows.old/Windows/Fonts/msjhbd.ttc"
-
 
 def getTakePicturePath(personGroupId):
     basepath = os.path.dirname(os.path.realpath(__file__))

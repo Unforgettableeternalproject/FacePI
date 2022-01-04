@@ -1,31 +1,33 @@
 #!/usr/bin/env python
 
-import sys, os, json, time, fire
+import os, time
 import cv2
 from cv2 import waitKey
-import http.client, urllib.request, urllib.parse, urllib.error, base64
-import IncludedClasses.ClassFacePI
-import IncludedClasses.ClassOpenCV
-import IncludedClasses.ClassPerson
-import IncludedClasses.ClassPersonGroup
-import IncludedClasses.ClassConfig
+import urllib.parse, urllib.error
+import IncludedClasses.ClassFacePI as PI
+import IncludedClasses.ClassOpenCV as CV
+import IncludedClasses.ClassPerson as Person
+import IncludedClasses.ClassPersonGroup as PG
+import IncludedClasses.ClassConfig as Config
+import IncludedClasses.ClassWindow as Window
 
 basepath = os.path.dirname(os.path.realpath(__file__))
 configpath = os.path.join(basepath, 'Config.json')
 
 def show_opencv():
-        return IncludedClasses.ClassOpenCV.show_opencv(' Smile :)')
+        return CV.show_opencv(' Smile :)')
 
 class FacePI:
     
     def __init__(self):
-        self.detect = IncludedClasses.ClassFacePI.Face()
-        self.config = IncludedClasses.ClassConfig.Config()
+        self.detect = PI.Face()
+        self.config = Config.Config()
+        self.window = Window.Window()
 
     def Train(self, userData = None, personname = None):
         jpgimagepaths = []
         for i in range(3):
-            jpgimagepath = IncludedClasses.ClassOpenCV.show_opencv(hint=" (Picture No. " + str(i + 1) + " )")
+            jpgimagepath = CV.show_opencv(hint=" (Picture No. " + str(i + 1) + " )")
             jpgimagepaths.append(jpgimagepath)
 
         if personname == None:
@@ -48,17 +50,17 @@ class FacePI:
 
         
 
-        personAPI = IncludedClasses.ClassPerson.Person()
+        personAPI = Person.Person()
         personAPI.add_personimages(self.config.readConfig()['personGroupID'], personname, userData, jpgtrainpaths)
-        personGroupapi = IncludedClasses.ClassPersonGroup.PersonGroup()
+        personGroupapi = PG.PersonGroup()
         personGroupapi.train_personGroup()
 
     def Identify(self, pictureurl):
 
         start = int(round(time.time() * 1000))
         print("Start estimating [\"identify\"]")
-        faceApi = IncludedClasses.ClassFacePI.Face()
-        personApi = IncludedClasses.ClassPerson.Person()
+        faceApi = PI.Face()
+        personApi = Person.Person()
         print("Loading IncludedClass", int(round(time.time() * 1000) - start), "ms")
 
         if pictureurl.startswith("http"):
@@ -97,11 +99,11 @@ class FacePI:
                 name = identifyface["person"]["name"]
                 confidence = float(identifyface["confidence"])
                 if confidence >= 0.9:
-                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with SUCCULENT result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "Estimation ended with SUCCULENT result.")
                 elif confidence >= 0.8:
-                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with Great result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "Estimation ended with Great result.")
                 elif confidence >= 0.7:
-                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "estimation ended with good result.")
+                    print(name + " signed in successfully." + f"[With a Confidence of {confidence}]\n" + "Estimation ended with good result.")
                 else:
                     print(name + " signed in successfully." + f"[With a Confidence of {confidence}]")
 
@@ -110,39 +112,44 @@ class FacePI:
         print("Debug Mode Activated, awaiting command...\n")
         answer = ''
         while(answer != 'leave'):
-            print("Awiting command...\n" + commandString[1])
+            print("Awiting command (Debug Mode Activated)...\n" + commandString[1] + "\n\n>_", end='')
             answer = input()
             if(answer == 'f_dt'):
                 print('\n')
-                imagepath = IncludedClasses.ClassOpenCV.show_opencv()
+                imagepath = CV.show_opencv()
                 self.detect.detectLocalImage(imagepath)
-                print('Returning to debug console...')
+                print('\n>_Returning to debug console...\n')
             elif(answer == 'f_id_local'):
-                print('\n Require image path: ')
+                print('\n>_Require image path: ')
                 imagepath = input()
                 pi.Signin(imagepath)
-                print('Returning to debug console...')
+                print('\n>_Returning to debug console...\n')
             elif(answer == 'f_id_url'):
-                print('\n Require image url: ')
+                print('\n>_Require image url: ')
                 imageurl = input()
                 pi.Signin(imageurl)
-                print('Returning to debug console...')
+                print('\n>_Returning to debug console...\n')
             elif(answer == 'p_json'):
-                print('\n')
-                print("Printing Json File (config.json):\n")
+                print("\n>_Printing Json File (config.json):\n")
                 print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
+            elif(answer == 'lol'):
+                print('\n>_Bernie is the developer of this program.\n')
+            elif(answer == 'ui'):
+                print('\n>_Activating Test Window...\n')
+                self.window.activate()
+                print('\n>_Returning to debug console...\n')
             elif(answer == 'leave'):
                 pass
             else:
-                print('Invaild command!\n')
+                print('\n>_Invaild command!\n')
     
-        print('Leaving Debug Mode...\n')
+        print('\n>_Leaving Debug Mode...\n')
 
     def Signin(self, ip):
         if(ip != ''):
             imagepath = ip
         else:
-            imagepath = IncludedClasses.ClassOpenCV.show_opencv()
+            imagepath = CV.show_opencv()
         # json_face_detect = classes.ClassFaceAPI.Face().detectLocalImage(imagepath)
         self.Identify(imagepath)
 
@@ -150,32 +157,31 @@ class FacePI:
 pi = FacePI()
 
 commandString = ["\nAcceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n Enter Debug Mode: 'debug',\n End Program: 'end'.", 
-                "\nAcceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Leave Debug Mode: 'leave'."]
+                "\nAcceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Print Useful(Useless) infomation: 'lol',\n Test UI (Beta): 'ui',\n Leave Debug Mode: 'leave'."]
 
 #Master
 answer = ''
 while(answer != 'end'):
-    print("Awiting command...\n" + commandString[0])
+    print("Awiting command...\n" + commandString[0] + "\n\n>_", end='')
     answer = input()
     if(answer == 'sign_in'):
         print('\n')
+        print('>_Initializing Sign In protocol...\n')
         pi.Signin('')
-        print('Returning to master console...')
+        print('\n>_Returning to master console...\n')
     elif(answer == 'train'):
         print('\n')
+        print('>_Initializing Train protocol...\n')
         pi.Train()
-        print('Returning to master console...')
+        print('\n>_Returning to master console...\n')
     elif(answer == 'debug'):
-        print('\n')
+        print('\n>_Entering Debug Mode...\n')
         pi.Debug()
     elif(answer == 'end'):
         pass
     else:
-        print('Invaild command!\n')
+        print('\n>_Invaild command!\n')
     
-print('Program Ended.')
+print('\nProgram Ended.')
 
 cv2.waitKey(0)
-
-#if __name__ == '__main__':
-#    fire.Fire(FacePI)

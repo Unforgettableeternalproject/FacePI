@@ -1,5 +1,9 @@
 import tkinter as tk
-import platform, sys, time, os
+import platform, sys, time, os, cv2
+import IncludedClasses.MainProgram as Main
+import IncludedClasses.ClassOpenCV as CV
+import IncludedClasses.ClassFacePI as PI
+import IncludedClasses.ClassConfig as Config
 from tkinter import messagebox
 from tkinter.constants import E, W
 from PIL import Image, ImageTk
@@ -7,40 +11,133 @@ from PIL import Image, ImageTk
 class Window:
 
     def __init__(self):
+        self.imagepath = ''
+        self.mode = 'Console'
+        self.anwser = ''
+        self.config = Config.Config()
+        self.FacePI = Main.FacePI()
+        self.detect = PI.Face()
         self.basepath = os.path.dirname(os.path.realpath(__file__))
         self.align_mode = 'nsew'
         self.pad = 10
+        self.commandString = ["Acceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n End Program: 'end'.", 
+                "Acceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Print Useful(Useless) infomation: 'lol'."]
+        
+    def get_imagepath(self):
+        def chkpath():
+            if(path.get() == ""):
+                alertmsg.set("Please enter a image path.")
+            else:
+                self.imagepath = path
+        prompt = tk.Tk()
+        path = tk.StringVar()
+        alertmsg = tk.StringVar()
+        inputlabel = tk.Label(prompt,text="Enter Image Path(URL):")
+        inputlabel.pack()
+        userkeyin = tk.Entry(prompt,textvariable=path)
+        userkeyin.pack()
+        yrbtn = tk.Button(prompt,text="Confirm",command=chkpath)
+        yrbtn.pack()
+        msglabel = tk.Label(prompt,textvariable=alertmsg)
+        msglabel.pack()
+        prompt.mainloop()
 
     def get_size(self, event, obj=''):
-
         trg_obj = self.window if obj == '' else obj
         self.w, self.h = trg_obj.winfo_width(), trg_obj.winfo_height()
 #        print(f'\r{(self.w, self.h)}', end='')
 
-    def get_text(self, text):   
-        self.result = text.get(1.0, tk.END+"-1c")
-        print(f'Debug: {self.result}')
+    def get_text(self, event):   
+        self.anwser = ''
+        self.answer = self.CP.get(1.0, tk.END + "-1c")
+        self.CP.delete('1.0','end')
+        self.CP['state'] = 'disabled'
+        self.CO.insert(tk.END, '\n' + self.anwser + self.mode)
+        if(self.mode == 'Console'):
+            if(self.answer == 'sign_in'):
+                self.CO.insert(tk.END, '\n>_Initializing Sign In protocol...\n')
+                self.FacePI.Signin('')
+                self.CO.insert(tk.END, '\n>_Returning to master console...\n')
+            elif(self.answer == 'train'):
+                self.CO.insert(tk.END, '\n>_Initializing Train protocol...\n')
+                self.FacePI.Train()
+                self.CO.insert(tk.END, '\n>_Returning to master console...\n')
+            else:
+                self.CO.insert(tk.END, '\n>_Invaild command!\n')
+        elif(self.mode == 'Debug'):
+            if(self.answer == 'f_dt'):
+                self.CO.insert(tk.END, '\n>_Preparing for snapshot capture...')
+                imagepath = CV.show_opencv()
+                self.detect.detectLocalImage(imagepath)
+                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+            elif(self.answer == 'f_id_local'):
+                self.CO.insert(tk.END, '\n>_Require image path: ')
+                self.CP['state'] = 'normal'
+                self.get_imagepath()
+                self.FacePI.Signin(self.imagepath)
+                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+            elif(self.answer == 'f_id_url'):
+                self.CO.insert(tk.END, '\n>_Require image url: ')
+                self.get_imagepath()
+                self.FacePI.Signin(self.imagepath)
+                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+            elif(self.answer == 'p_json'):
+                self.CO.insert(tk.END, '\n>_Printing Json File (config.json):\n')
+                self.CO.insert(tk.END, f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
+            elif(self.answer == 'lol'):
+                self.CO.insert(tk.END, '\n>_Bernie is the developer of this program.\n')
+            else:
+                self.CO.insert(tk.END, '\n>_Invaild command!\n')
+        else:
+            self.CP.delete('1.0','end+1c')
+            self.CO.delete('1.0','end+1c')
+            self.DS.delete('1.0','end+1c')
+            self.CP['state'] = 'disabled'
+            self.CO['state'] = 'disabled'
+            self.DS['state'] = 'disabled'
+            self.CO.insert(tk.END, 'How did we get here?')
+            self.CP.insert(tk.END, 'It should be impossible to reach this mode.')
+            self.DS.insert(tk.END, 'Error, please restart.')
+            return 0
+        self.CP['state'] = 'normal'
 
-    def toggle_fullScreen(self):
-        self.is_windows = lambda : 1 if platform.system() == 'Windows' else 0
+    #def toggle_fullScreen(self, event):
+    #    self.is_windows = lambda : 1 if platform.system() == 'Windows' else 0
 
-        self.isFullScreen = not self.isFullScreen
-        self.window.attributes("-fullscreen" if self.is_windows() else "-zoomed", self.isFullScreen)
+    #    self.isFullScreen = not self.isFullScreen
+    #    self.window.attributes("-fullscreen" if self.is_windows() else "-zoomed", self.isFullScreen)
 
-    def quit(self):
-        quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
-        if quit_check:
-            print('\n>_Quitting the program...')
-            self.window.destroy()	
+    #def quit(self, event):
+    #    quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
+    #    if quit_check:
+    #        print('\n>_Quitting the program...')
+    #        print('\nProgram Ended. Press any key to continue.')
+    #        cv2.waitKey()
+    #        self.window.destroy()	
+            
 
     def console(self):
-        print('hi - 1')
+        self.answer = ''
+        self.DS.delete('1.0','end+1c')
+        self.CO.delete('1.0','end+1c')
+        self.DS.insert(tk.END, self.commandString[0])
+        self.CO.insert(tk.END, "Awiting command...")
+        self.mode = 'Console'
+
+        
 
     def debug_mode(self):
-        print('hi - 2')
+        self.answer = ''
+        self.DS.delete('1.0','end+1c')
+        self.CO.delete('1.0','end+1c')
+        self.DS.insert(tk.END, self.commandString[1])
+        self.CO.insert(tk.END, "Awiting command (Debug Mode Activated)...")
+        self.mode = 'Debug'
     
     def reset(self):
-        print('hi - 3')
+        self.DS.delete('1.0','end+1c')
+        self.DS.insert(tk.END, 'Press "Start Console" to activate the program.')
+        self.CO.delete('1.0','end+1c')
 
     def activate(self):
 
@@ -54,7 +151,7 @@ class Window:
                 method(obj, cols, rows)
 
         self.window = tk.Tk()
-        self.window.title('Test Tkinter Window owo')
+        self.window.title("Bernie's FacePI owo")
         self.window.iconbitmap(self.basepath+'/Icon.ico')
         self.window.resizable(0,0)
 
@@ -76,13 +173,13 @@ class Window:
         self.QU.grid(column=3, row=0, sticky=self.align_mode)
         self.TM = tk.Label(self.control_panel, text='Made by Bernie', fg='steelblue', bg='lightgrey', font=("Gabriola", 17))
         self.TM.grid(column=4, row=0, ipadx = 32, sticky=E)
-        self.DS = tk.Text(self.description, width=10, height=10, fg='darkcyan', font=("Centaur", 16, "bold"))
+        self.DS = tk.Text(self.description, width=10, height=10, fg='darkcyan', font=("Centaur", 10, "bold"))
         self.DS.grid(column=0, row=0, sticky=self.align_mode, rowspan=2)
         self.CO = tk.Text(self.description, width=40, height=8, fg = 'dimgrey', font=("Calibri", 12))
         self.CO.grid(column=1, row=0, sticky=self.align_mode)
         self.CP = tk.Text(self.description, width=40, height=2, fg = 'black', font=("Calibri", 12))
         self.CP.grid(column=1, row=1, sticky=self.align_mode)
-#        self.DS.pack()
+        self.reset()
         
 
         
@@ -94,7 +191,8 @@ class Window:
         self.QU['command'] = self.quit
 
         self.isFullScreen = False
-        self.window.bind('<F4>', self.toggle_fullScreen)
-        self.window.bind('<Escape>', self.quit)
+        self.CP.bind('<Return>', self.get_text)
+    #    self.window.bind('<F4>', self.toggle_fullScreen)
+    #    self.window.bind('<Escape>', self.quit)
         self.window.bind('<Configure>', lambda event, obj=self.description :self.get_size(event, obj))
         self.window.mainloop()

@@ -28,7 +28,9 @@ class Window:
             if(path.get() == ""):
                 alertmsg.set("Please enter a image path.")
             else:
-                self.imagepath = path
+                self.imagepath = path.get()
+                prompt.destroy()
+
         prompt = tk.Tk()
         path = tk.StringVar()
         alertmsg = tk.StringVar()
@@ -49,42 +51,42 @@ class Window:
 
     def get_text(self, event):   
         self.anwser = ''
-        self.answer = self.CP.get(1.0, tk.END + "-1c")
+        self.anwser = self.CP.get(1.0, tk.END + "-1c")
         self.CP.delete('1.0','end')
         self.CP['state'] = 'disabled'
-        self.CO.insert(tk.END, '\n' + self.anwser + self.mode)
+        self.CO.insert(tk.END, '\n' + self.anwser + '\n' + self.mode)
         if(self.mode == 'Console'):
-            if(self.answer == 'sign_in'):
+            if(self.anwser == 'sign_in'):
                 self.CO.insert(tk.END, '\n>_Initializing Sign In protocol...\n')
                 self.FacePI.Signin('')
                 self.CO.insert(tk.END, '\n>_Returning to master console...\n')
-            elif(self.answer == 'train'):
+            elif(self.anwser == 'train'):
                 self.CO.insert(tk.END, '\n>_Initializing Train protocol...\n')
                 self.FacePI.Train()
                 self.CO.insert(tk.END, '\n>_Returning to master console...\n')
             else:
                 self.CO.insert(tk.END, '\n>_Invaild command!\n')
         elif(self.mode == 'Debug'):
-            if(self.answer == 'f_dt'):
+            if(self.anwser == 'f_dt'):
                 self.CO.insert(tk.END, '\n>_Preparing for snapshot capture...')
                 imagepath = CV.show_opencv()
                 self.detect.detectLocalImage(imagepath)
                 self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
-            elif(self.answer == 'f_id_local'):
+            elif(self.anwser == 'f_id_local'):
                 self.CO.insert(tk.END, '\n>_Require image path: ')
                 self.CP['state'] = 'normal'
                 self.get_imagepath()
                 self.FacePI.Signin(self.imagepath)
                 self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
-            elif(self.answer == 'f_id_url'):
+            elif(self.anwser == 'f_id_url'):
                 self.CO.insert(tk.END, '\n>_Require image url: ')
                 self.get_imagepath()
                 self.FacePI.Signin(self.imagepath)
                 self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
-            elif(self.answer == 'p_json'):
+            elif(self.anwser == 'p_json'):
                 self.CO.insert(tk.END, '\n>_Printing Json File (config.json):\n')
                 self.CO.insert(tk.END, f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
-            elif(self.answer == 'lol'):
+            elif(self.anwser == 'lol'):
                 self.CO.insert(tk.END, '\n>_Bernie is the developer of this program.\n')
             else:
                 self.CO.insert(tk.END, '\n>_Invaild command!\n')
@@ -107,13 +109,13 @@ class Window:
     #    self.isFullScreen = not self.isFullScreen
     #    self.window.attributes("-fullscreen" if self.is_windows() else "-zoomed", self.isFullScreen)
 
-    #def quit(self, event):
-    #    quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
-    #    if quit_check:
-    #        print('\n>_Quitting the program...')
-    #        print('\nProgram Ended. Press any key to continue.')
-    #        cv2.waitKey()
-    #        self.window.destroy()	
+    def quit(self):
+        quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
+        if quit_check:
+            print('\n>_Quitting the program...')
+            print('\nProgram Ended. Press any key to continue.')
+            cv2.waitKey()
+            self.window.destroy()	
             
 
     def console(self):
@@ -138,6 +140,7 @@ class Window:
         self.DS.delete('1.0','end+1c')
         self.DS.insert(tk.END, 'Press "Start Console" to activate the program.')
         self.CO.delete('1.0','end+1c')
+        self.mode = 'Console'
 
     def activate(self):
 

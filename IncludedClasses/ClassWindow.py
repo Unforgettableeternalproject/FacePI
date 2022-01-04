@@ -1,6 +1,7 @@
 import tkinter as tk
 import platform, sys, time, os
 from tkinter import messagebox
+from tkinter.constants import E, W
 from PIL import Image, ImageTk
 
 class Window:
@@ -58,15 +59,11 @@ class Window:
         self.window.resizable(0,0)
 
         self.upper, self.lower = 200, 400
-        self.control_panel = tk.Frame(self.window,  width=self.upper*2/3 , height=self.upper)
-        self.trademark = tk.Frame(self.window, width=self.upper/3, height=self.upper)
-        self.description = tk.Frame(self.window,  width=self.lower/2 , height=self.lower) 
-        self.command_console = tk.Frame(self.window, width=self.lower/2, height=self.lower)
+        self.control_panel = tk.Frame(self.window,  width=self.upper , height=self.upper)
+        self.description = tk.Frame(self.window,  width=self.lower , height=self.lower) 
         
         self.control_panel.grid(column=0, row=0, padx=self.pad, pady=self.pad, sticky=self.align_mode)
-        self.trademark.grid(column=1, row=0, padx=self.pad, pady=self.pad, sticky=self.align_mode)
-        self.description.grid(column=0, row=1, padx=self.pad, pady=self.pad, sticky=self.align_mode)
-        self.command_console.grid(column=1,row=1, padx=self.pad, pady=self.pad, sticky=self.align_mode)
+        self.description.grid(column=0, row=1, padx=self.pad/2, pady=self.pad, sticky=self.align_mode)
 
         #Basic UI
         self.SC = tk.Button(self.control_panel, text='Start Console', bg='slategrey', fg='black', height=2)
@@ -77,13 +74,13 @@ class Window:
         self.RE.grid(column=2, row=0, sticky=self.align_mode)
         self.QU = tk.Button(self.control_panel, text='Quit', bg='gainsboro', fg='black', height=2)
         self.QU.grid(column=3, row=0, sticky=self.align_mode)
-        self.TM = tk.Label(self.trademark, text='Made by Bernie', fg='steelblue', bg='lightgrey', font=("Gabriola", 18))
-        self.TM.grid(column=0, row=0, padx = self.pad, sticky=self.align_mode)
-        self.DS = tk.Text(self.description, width=20, height=9, fg='darkcyan', font=("Centaur", 16, "bold"))
-        self.DS.grid(column=0, row=0, sticky=self.align_mode)
-        self.CO = tk.Text(self.command_console, width=20, height=5, fg = 'dimgrey', font=("Calibri", 12))
+        self.TM = tk.Label(self.control_panel, text='Made by Bernie', fg='steelblue', bg='lightgrey', font=("Gabriola", 17))
+        self.TM.grid(column=4, row=0, ipadx = 32, sticky=E)
+        self.DS = tk.Text(self.description, width=10, height=10, fg='darkcyan', font=("Centaur", 16, "bold"))
+        self.DS.grid(column=0, row=0, sticky=self.align_mode, rowspan=2)
+        self.CO = tk.Text(self.description, width=40, height=8, fg = 'dimgrey', font=("Calibri", 12))
         self.CO.grid(column=1, row=0, sticky=self.align_mode)
-        self.CP = tk.Text(self.command_console, width=20, height=3, fg = 'black', font=("Calibri", 12))
+        self.CP = tk.Text(self.description, width=40, height=2, fg = 'black', font=("Calibri", 12))
         self.CP.grid(column=1, row=1, sticky=self.align_mode)
 #        self.DS.pack()
         

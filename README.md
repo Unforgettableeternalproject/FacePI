@@ -5,4 +5,4 @@ Trying to do a face identification program. Also F.
 
 To be added:
     A jump-out window which displays console for FacePI main program.
-    A interactive client-to-client ui
+    A interactive client-to-client UI.

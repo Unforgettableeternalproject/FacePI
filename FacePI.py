@@ -115,7 +115,7 @@ class FacePI:
             print("Awiting command (Debug Mode Activated)...\n" + commandString[1] + "\n\n>_", end='')
             answer = input()
             if(answer == 'f_dt'):
-                print('\n')
+                print('\n>_Preparing for snapshot capture...')
                 imagepath = CV.show_opencv()
                 self.detect.detectLocalImage(imagepath)
                 print('\n>_Returning to debug console...\n')
@@ -165,13 +165,11 @@ while(answer != 'end'):
     print("Awiting command...\n" + commandString[0] + "\n\n>_", end='')
     answer = input()
     if(answer == 'sign_in'):
-        print('\n')
-        print('>_Initializing Sign In protocol...\n')
+        print('\n>_Initializing Sign In protocol...\n')
         pi.Signin('')
         print('\n>_Returning to master console...\n')
     elif(answer == 'train'):
-        print('\n')
-        print('>_Initializing Train protocol...\n')
+        print('\n>_Initializing Train protocol...\n')
         pi.Train()
         print('\n>_Returning to master console...\n')
     elif(answer == 'debug'):

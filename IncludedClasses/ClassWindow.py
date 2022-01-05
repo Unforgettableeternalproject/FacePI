@@ -131,7 +131,7 @@ class Window:
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[0])
-        self.CO.insert(tk.END, "Awiting command...")
+        self.CO.insert(tk.END, "Awaiting command...")
         self.mode = 'Console'
 
         
@@ -141,7 +141,7 @@ class Window:
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[1])
-        self.CO.insert(tk.END, "Awiting command (Debug Mode Activated)...")
+        self.CO.insert(tk.END, "Awaiting command (Debug Mode Activated)...")
         self.mode = 'Debug'
     
     def reset(self):

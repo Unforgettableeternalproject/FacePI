@@ -5,5 +5,5 @@ Trying to do a face identification program. Also F.
 
 To be added:
     Console animation.
-    description fix. 
+    Description fix. 
     Terminal to console transferation.

@@ -1,17 +1,16 @@
 import tkinter as tk
 import platform, sys, time, os, cv2
+from typing import Collection
 import IncludedClasses.MainProgram as Main
 import IncludedClasses.ClassOpenCV as CV
 import IncludedClasses.ClassFacePI as PI
 import IncludedClasses.ClassConfig as Config
 from tkinter import messagebox
 from tkinter.constants import E, W
-from PIL import Image, ImageTk
 
 class Window:
 
     def __init__(self):
-        self.imagepath = ''
         self.mode = 'Console'
         self.anwser = ''
         self.config = Config.Config()
@@ -23,25 +22,40 @@ class Window:
         self.commandString = ["Acceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n End Program: 'end'.", 
                 "Acceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Print Useful(Useless) infomation: 'lol'."]
         
-    def get_imagepath(self):
+    def get_imagepath(self, mode):
         def chkpath():
             if(path.get() == ""):
-                alertmsg.set("Please enter a image path.")
+                if(mode == 'Local'): alertmsg.set("Please enter a image path.")
+                elif(mode == 'URL'): alertmsg.set("Please enter a image url.")
             else:
-                self.imagepath = path.get()
-                prompt.destroy()
-
-        prompt = tk.Tk()
+                if(mode == 'Local' and not os.path.exists(path.get())):
+                    alertmsg.set("Please enter a VALID image path.")
+                elif(mode == 'URL' and not path.get().startswith("http")):
+                    alertmsg.set("Please enter a VALID image url.")
+                else:
+                    prompt.destroy()
+                    prompt.update()
+                    self.FacePI.Signin(path.get())
+                    self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+                    self.CP['state'] = 'normal'
+        prompt = tk.Toplevel()
+        prompt.iconbitmap(self.basepath+'/Icon.ico')
+        prompt.title("Image Path Fetcher")
+        prompt.geometry('450x200')
+        Cs = tk.Frame(prompt, width=200, height=200)
+        Cs.pack()
         path = tk.StringVar()
         alertmsg = tk.StringVar()
-        inputlabel = tk.Label(prompt,text="Enter Image Path(URL):")
+        inputlabel = tk.Label(Cs, text="Enter Image Path(URL):")
+        userkeyin = tk.Entry(Cs, textvariable=path)
+        yrbtn = tk.Button(Cs, text="Confirm", width=20)
+        msglabel = tk.Label(Cs, textvariable=alertmsg)
         inputlabel.pack()
-        userkeyin = tk.Entry(prompt,textvariable=path)
         userkeyin.pack()
-        yrbtn = tk.Button(prompt,text="Confirm",command=chkpath)
         yrbtn.pack()
-        msglabel = tk.Label(prompt,textvariable=alertmsg)
         msglabel.pack()
+        
+        yrbtn['command'] = chkpath
         prompt.mainloop()
 
     def get_size(self, event, obj=''):
@@ -50,7 +64,6 @@ class Window:
 #        print(f'\r{(self.w, self.h)}', end='')
 
     def get_text(self, event):   
-        self.anwser = ''
         self.anwser = self.CP.get(1.0, tk.END + "-1c")
         self.CP.delete('1.0','end')
         self.CP['state'] = 'disabled'
@@ -74,15 +87,10 @@ class Window:
                 self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
             elif(self.anwser == 'f_id_local'):
                 self.CO.insert(tk.END, '\n>_Require image path: ')
-                self.CP['state'] = 'normal'
-                self.get_imagepath()
-                self.FacePI.Signin(self.imagepath)
-                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+                self.get_imagepath('Local')
             elif(self.anwser == 'f_id_url'):
                 self.CO.insert(tk.END, '\n>_Require image url: ')
-                self.get_imagepath()
-                self.FacePI.Signin(self.imagepath)
-                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+                self.get_imagepath('URL')
             elif(self.anwser == 'p_json'):
                 self.CO.insert(tk.END, '\n>_Printing Json File (config.json):\n')
                 self.CO.insert(tk.END, f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")

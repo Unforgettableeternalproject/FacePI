@@ -13,6 +13,7 @@ class Window:
     def __init__(self):
         self.mode = 'Console'
         self.anwser = ''
+        self.typing = False
         self.config = Config.Config()
         self.FacePI = Main.FacePI()
         self.detect = PI.Face()
@@ -22,6 +23,19 @@ class Window:
         self.commandString = ["Acceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n End Program: 'end'.", 
                 "Acceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Print Useful(Useless) infomation: 'lol'."]
         
+    def c_print(self, text, counter = "1.0"):
+        if len(text) > 0:
+            self.CO.insert(tk.END, text[0])
+            if len(text) > 1:
+            # compute index of next char
+                counter = self.CO.index("%s + 1 char" % counter)
+                # type the next character in half a second
+                self.CO.after(50, self.c_print, text[1:], counter)
+            elif len(text) == 1: self.typing = True
+        print(f"{len(text)}, {self.typing}")
+        self.CO.see("end")
+
+
     def get_imagepath(self, mode):
         def chkpath():
             if(path.get() == ""):
@@ -36,12 +50,12 @@ class Window:
                     prompt.destroy()
                     prompt.update()
                     self.FacePI.Signin(path.get())
-                    self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+                    self.c_print('\n>_Returning to debug console...\n')
                     self.CP['state'] = 'normal'
         prompt = tk.Toplevel()
         prompt.iconbitmap(self.basepath+'/Icon.ico')
         prompt.title("Image Path Fetcher")
-        prompt.geometry('450x200')
+        prompt.geometry('350x150')
         Cs = tk.Frame(prompt, width=200, height=200)
         Cs.pack()
         path = tk.StringVar()
@@ -56,6 +70,7 @@ class Window:
         msglabel.pack()
         
         yrbtn['command'] = chkpath
+        
         prompt.mainloop()
 
     def get_size(self, event, obj=''):
@@ -67,37 +82,42 @@ class Window:
         self.anwser = self.CP.get(1.0, tk.END + "-1c")
         self.CP.delete('1.0','end')
         self.CP['state'] = 'disabled'
-        self.CO.insert(tk.END, '\n' + self.anwser + '\n' + self.mode)
+        self.typing = False
+    #    self.CO.insert(tk.END, '\n' + self.anwser + '\n' + self.mode)
         if(self.mode == 'Console'):
             if(self.anwser == 'sign_in'):
-                self.CO.insert(tk.END, '\n>_Initializing Sign In protocol...\n')
+                self.c_print('\n>_Initializing Sign In protocol...\n')
                 self.FacePI.Signin('')
-                self.CO.insert(tk.END, '\n>_Returning to master console...\n')
+                self.c_print('\n>_Returning to master console...\n')
             elif(self.anwser == 'train'):
-                self.CO.insert(tk.END, '\n>_Initializing Train protocol...\n')
+                self.c_print('\n>_Initializing Train protocol...\n')
                 self.FacePI.Train()
-                self.CO.insert(tk.END, '\n>_Returning to master console...\n')
+                self.c_print('\n>_Returning to master console...\n')
             else:
-                self.CO.insert(tk.END, '\n>_Invaild command!\n')
+                self.c_print('\n>_Invaild command!\n')
         elif(self.mode == 'Debug'):
             if(self.anwser == 'f_dt'):
-                self.CO.insert(tk.END, '\n>_Preparing for snapshot capture...')
+                self.c_print('\n>_Preparing for snapshot capture...')
+                print(self.typing)
+                self.window.wait_variable(self.typing)
+                print(self.typing, '\n')
                 imagepath = CV.show_opencv()
                 self.detect.detectLocalImage(imagepath)
-                self.CO.insert(tk.END, '\n>_Returning to debug console...\n')
+                self.c_print('\n>_Returning to debug console...\n')
             elif(self.anwser == 'f_id_local'):
-                self.CO.insert(tk.END, '\n>_Require image path: ')
+                self.c_print('\n>_Require image path: ')
                 self.get_imagepath('Local')
             elif(self.anwser == 'f_id_url'):
-                self.CO.insert(tk.END, '\n>_Require image url: ')
+                self.c_print('\n>_Require image url: ')
                 self.get_imagepath('URL')
             elif(self.anwser == 'p_json'):
-                self.CO.insert(tk.END, '\n>_Printing Json File (config.json):\n')
-                self.CO.insert(tk.END, f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
+                self.c_print('\n>_Printing Json File (config.json):\n')
+                self.window.wait_variable(self.typing)
+                self.c_print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
             elif(self.anwser == 'lol'):
-                self.CO.insert(tk.END, '\n>_Bernie is the developer of this program.\n')
+                self.c_print('\n>_Bernie is the developer of this program.')
             else:
-                self.CO.insert(tk.END, '\n>_Invaild command!\n')
+                self.c_print('\n>_Invaild command!\n')
         else:
             self.CP.delete('1.0','end+1c')
             self.CO.delete('1.0','end+1c')
@@ -105,9 +125,9 @@ class Window:
             self.CP['state'] = 'disabled'
             self.CO['state'] = 'disabled'
             self.DS['state'] = 'disabled'
-            self.CO.insert(tk.END, 'How did we get here?')
-            self.CP.insert(tk.END, 'It should be impossible to reach this mode.')
-            self.DS.insert(tk.END, 'Error, please restart.')
+            self.c_print('How did we get here?')
+            self.c_print('It should be impossible to reach this mode.')
+            self.c_print('Error, please restart.')
             return 0
         self.CP['state'] = 'normal'
 
@@ -120,9 +140,8 @@ class Window:
     def quit(self):
         quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
         if quit_check:
-            print('\n>_Quitting the program...')
-            print('\nProgram Ended. Press any key to continue.')
-            cv2.waitKey()
+            self.c_print('\n>_Quitting the program...')
+            self.c_print('\nProgram Ended.')
             self.window.destroy()	
             
 
@@ -131,7 +150,7 @@ class Window:
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[0])
-        self.CO.insert(tk.END, "Awaiting command...")
+        self.c_print("Awaiting command...")
         self.mode = 'Console'
 
         
@@ -141,7 +160,7 @@ class Window:
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[1])
-        self.CO.insert(tk.END, "Awaiting command (Debug Mode Activated)...")
+        self.c_print("Awaiting command (Debug Mode Activated)...")
         self.mode = 'Debug'
     
     def reset(self):
@@ -183,7 +202,7 @@ class Window:
         self.QU = tk.Button(self.control_panel, text='Quit', bg='gainsboro', fg='black', height=2)
         self.QU.grid(column=3, row=0, sticky=self.align_mode)
         self.TM = tk.Label(self.control_panel, text='Made by Bernie', fg='steelblue', bg='lightgrey', font=("Gabriola", 17))
-        self.TM.grid(column=4, row=0, ipadx = 32, sticky=E)
+        self.TM.grid(column=4, row=0, ipadx = 30, sticky=E)
         self.DS = tk.Text(self.description, width=10, height=10, fg='darkcyan', font=("Centaur", 10, "bold"))
         self.DS.grid(column=0, row=0, sticky=self.align_mode, rowspan=2)
         self.CO = tk.Text(self.description, width=40, height=8, fg = 'dimgrey', font=("Calibri", 12))

@@ -51,7 +51,7 @@ class Person:
             conn.close()
 
         except Exception as e:
-            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed. Please check your Internet Connection. {1}".format(e.errno, e.strerror))
 
     def create_a_person(self, personGroupId, name, userData):
         print(
@@ -83,7 +83,7 @@ class Person:
             create_a_person_json = json.loads(str(data, "UTF-8"))
             conn.close()
         except Exception as e:
-            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed. Please check your Internet Connection. {1}".format(e.errno, e.strerror))
 
         if "error" in create_a_person_json:
             print("Error: " + create_a_person_json["error"]["code"])
@@ -125,4 +125,4 @@ class Person:
             return personjson
             
         except Exception as e:
-            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed. Please check your Internet Connection. {1}".format(e.errno, e.strerror))

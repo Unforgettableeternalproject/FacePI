@@ -39,7 +39,7 @@ class Face:
 
             return json_face_detect
         except Exception as e:
-            print("[Errno {0}]Connection Failed {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed, Please check your Internet Connection. {1}".format(e.errno, e.strerror))
 
     def detectImageUrl(self, imageurl):
         headers = {
@@ -76,7 +76,7 @@ class Face:
             return json_face_detect
             
         except Exception as e:
-            print("[Errno {0}]Connection Failed {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed, Please check your Internet Connection. {1}".format(e.errno, e.strerror))
 
     def identify(self, faceidkeys, personGroupId):
         print("def Face.identify start identifying。faceidkeys=", faceidkeys)
@@ -120,7 +120,7 @@ class Face:
             conn.close()
             # ClassUtils.tryFaceAPIError(identifyfaces)
         except Exception as e:
-            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed. Please check your Internet Connection. {1}".format(e.errno, e.strerror))
             sys.exit()
 
         if "error" in identifiedfaces:

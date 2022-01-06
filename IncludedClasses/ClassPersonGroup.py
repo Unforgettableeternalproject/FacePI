@@ -34,7 +34,7 @@ class PersonGroup:
             print(data)
             conn.close()
         except Exception as e:
-            print("[Errno {0}]Disconnected. Please Check you Internet Connection. {1}".format(e.errno, e.strerror))
+            print("[Errno {0}]Connection Failed. Please check your Internet Connection. {1}".format(e.errno, e.strerror))
 
     def createPersonGroup(self, personGroupId, groupname, groupdata):
         print("createPersonGroup: Create a personGroup ID [personGroupID = " + personGroupId + " ].")

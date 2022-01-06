@@ -15,7 +15,7 @@ class Config:
             config = dict()
             config['api_key'] = "b9160fbd882f47bd821205a4bce64354"
             config['host'] = "eastasia.api.cognitive.microsoft.com"
-            config['confidence'] = 0.8
+            config['confidence'] = 0.5
             config['title'] = 'Test API Program'
             config['personGroupName'] = 'GroupName'
             config['personGroupID'] = 'default_personGroupID'

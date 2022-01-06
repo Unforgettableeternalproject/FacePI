@@ -21,6 +21,7 @@ class FacePI:
     def __init__(self):
         self.detect = PI.Face()
         self.config = Config.Config()
+        self.result = ''
 
     def Train(self, userData = None, personname = None):
         jpgimagepaths = []
@@ -54,7 +55,7 @@ class FacePI:
         personGroupapi.train_personGroup()
 
     def Identify(self, pictureurl):
-
+        self.result = ''
         start = int(round(time.time() * 1000))
         print("Start estimating [\"identify\"]")
         faceApi = PI.Face()
@@ -92,18 +93,18 @@ class FacePI:
         for identifyface in identifiedfaces:
             if "person" not in identifyface:
                 print("identifyface=", identifyface)
-                print("Can't identify the faces, please do training first.")
+                self.result = "Can't identify the faces, please do training first."
             else:
                 name = identifyface["person"]["name"]
                 confidence = float(identifyface["confidence"])
                 if confidence >= 0.9:
-                    print(name + " signed in successfully. " + f"[With a Confidence of {confidence}]\n" + "Estimation ended with SUCCULENT result.")
+                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with SUCCULENT result."
                 elif confidence >= 0.8:
-                    print(name + " signed in successfully. " + f"[With a Confidence of {confidence}]\n" + "Estimation ended with Great result.")
+                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with Great result."
                 elif confidence >= 0.7:
-                    print(name + " signed in successfully. " + f"[With a Confidence of {confidence}]\n" + "Estimation ended with good result.")
+                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with good result."
                 else:
-                    print(name + " signed in successfully. " + f"[With a Confidence of {confidence}]")
+                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]"
 
     def Signin(self, ip):
         if(ip != ''):

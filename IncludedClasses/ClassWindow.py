@@ -6,7 +6,7 @@ import IncludedClasses.ClassOpenCV as CV
 import IncludedClasses.ClassFacePI as PI
 import IncludedClasses.ClassConfig as Config
 from tkinter import messagebox
-from tkinter.constants import E, W
+from tkinter.constants import DISABLED, E, NORMAL, RAISED, SUNKEN, W
 
 class Window:
 
@@ -20,20 +20,26 @@ class Window:
         self.basepath = os.path.dirname(os.path.realpath(__file__))
         self.align_mode = 'nsew'
         self.pad = 10
-        self.commandString = ["Acceptible Commands:\n Sign in: 'sign_in',\n Train: 'train',\n End Program: 'end'.", 
-                "Acceptible Commands:\n Face Detection(Only scan charateristics): 'f_dt',\n Face Identification(Local Image): 'f_id_local',\n Face Identification(From Internet): 'f_id_url',\n Print Config.json: 'p_json',\n Print Useful(Useless) infomation: 'lol'."]
+        self.commandString = ["Acceptible Commands:\n'sign_in',\n'train'.", 
+                "Acceptible Commands:\n'f_dt',\n'f_id_local',\n'f_id_url',\n'p_json',\n'lol'."]
         
-    def c_print(self, text, counter = "1.0"):
-        if len(text) > 0:
-            self.CO.insert(tk.END, text[0])
-            if len(text) > 1:
-            # compute index of next char
-                counter = self.CO.index("%s + 1 char" % counter)
-                # type the next character in half a second
-                self.CO.after(50, self.c_print, text[1:], counter)
-            elif len(text) == 1: self.typing = True
-        print(f"{len(text)}, {self.typing}")
-        self.CO.see("end")
+    def c_print(self, text, mode = 'animated'):
+        if(mode == 'animated'):
+            self.CO['state'] = NORMAL
+            if len(text) > 0:
+                self.CO.insert(tk.END, text[0])
+                if len(text) > 1:
+                    self.CO.after(50, self.c_print, text[1:], mode)
+                elif len(text) == 1: self.typing = True
+        #    print(f"{len(text)}, {self.typing}")
+        #    self.CO.update()
+            self.CO['state'] = DISABLED
+            self.CO.see("end")
+        elif(mode == 'instant'):
+            self.CO['state'] = NORMAL
+            self.CO.insert(tk.END, text)
+            self.CO['state'] = DISABLED
+            self.CO.see("end")
 
 
     def get_imagepath(self, mode):
@@ -50,8 +56,9 @@ class Window:
                     prompt.destroy()
                     prompt.update()
                     self.FacePI.Signin(path.get())
+                    self.c_print('\n' + self.FacePI.result, 'instant')
                     self.c_print('\n>_Returning to debug console...\n')
-                    self.CP['state'] = 'normal'
+                    self.CP['state'] = NORMAL
         prompt = tk.Toplevel()
         prompt.iconbitmap(self.basepath+'/Icon.ico')
         prompt.title("Image Path Fetcher")
@@ -81,28 +88,25 @@ class Window:
     def get_text(self, event):   
         self.anwser = self.CP.get(1.0, tk.END + "-1c")
         self.CP.delete('1.0','end')
-        self.CP['state'] = 'disabled'
+        self.CP['state'] = DISABLED
         self.typing = False
     #    self.CO.insert(tk.END, '\n' + self.anwser + '\n' + self.mode)
         if(self.mode == 'Console'):
             if(self.anwser == 'sign_in'):
-                self.c_print('\n>_Initializing Sign In protocol...\n')
+                self.c_print('\n>_Initializing Sign In protocol...', 'instant')
                 self.FacePI.Signin('')
+                self.c_print('\n' + self.FacePI.result, 'instant')
                 self.c_print('\n>_Returning to master console...\n')
             elif(self.anwser == 'train'):
-                self.c_print('\n>_Initializing Train protocol...\n')
+                self.c_print('\n>_Initializing Train protocol...', 'instant')
                 self.FacePI.Train()
                 self.c_print('\n>_Returning to master console...\n')
             else:
                 self.c_print('\n>_Invaild command!\n')
         elif(self.mode == 'Debug'):
             if(self.anwser == 'f_dt'):
-                self.c_print('\n>_Preparing for snapshot capture...')
-                print(self.typing)
-                self.window.wait_variable(self.typing)
-                print(self.typing, '\n')
-                imagepath = CV.show_opencv()
-                self.detect.detectLocalImage(imagepath)
+                self.c_print('\n>_Preparing for snapshot capture...', 'instant')
+                self.detect.detectLocalImage(CV.show_opencv())
                 self.c_print('\n>_Returning to debug console...\n')
             elif(self.anwser == 'f_id_local'):
                 self.c_print('\n>_Require image path: ')
@@ -111,25 +115,23 @@ class Window:
                 self.c_print('\n>_Require image url: ')
                 self.get_imagepath('URL')
             elif(self.anwser == 'p_json'):
-                self.c_print('\n>_Printing Json File (config.json):\n')
-                self.window.wait_variable(self.typing)
+                self.c_print('\n>_Printing Json File (config.json):\n', 'instant')
+                self.window.after(200)
                 self.c_print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
             elif(self.anwser == 'lol'):
                 self.c_print('\n>_Bernie is the developer of this program.')
             else:
-                self.c_print('\n>_Invaild command!\n')
+                self.c_print('\n>_Invaild command!')
         else:
             self.CP.delete('1.0','end+1c')
             self.CO.delete('1.0','end+1c')
             self.DS.delete('1.0','end+1c')
-            self.CP['state'] = 'disabled'
-            self.CO['state'] = 'disabled'
-            self.DS['state'] = 'disabled'
+            self.CP['state'] = DISABLED
             self.c_print('How did we get here?')
-            self.c_print('It should be impossible to reach this mode.')
+            self.c_print('It should be impossible to reach here.')
             self.c_print('Error, please restart.')
             return 0
-        self.CP['state'] = 'normal'
+        self.CP['state'] = NORMAL
 
     #def toggle_fullScreen(self, event):
     #    self.is_windows = lambda : 1 if platform.system() == 'Windows' else 0
@@ -147,9 +149,16 @@ class Window:
 
     def console(self):
         self.answer = ''
+        self.SC['relief'] = SUNKEN
+        self.SC['state'] = DISABLED
+        self.DM['relief'] = RAISED
+        self.DM['state'] = NORMAL
+        self.DS['state'] = NORMAL
+        self.CO['state'] = NORMAL
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[0])
+        self.DS['state'] = DISABLED
         self.c_print("Awaiting command...")
         self.mode = 'Console'
 
@@ -157,16 +166,31 @@ class Window:
 
     def debug_mode(self):
         self.answer = ''
+        self.DM['relief'] = SUNKEN
+        self.DM['state'] = DISABLED
+        self.SC['relief'] = RAISED
+        self.SC['state'] = NORMAL
+        self.DS['state'] = NORMAL
+        self.CO['state'] = NORMAL
         self.DS.delete('1.0','end+1c')
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[1])
+        self.DS['state'] = DISABLED
         self.c_print("Awaiting command (Debug Mode Activated)...")
         self.mode = 'Debug'
     
     def reset(self):
+        self.SC['relief'] = RAISED
+        self.SC['state'] = NORMAL
+        self.DM['relief'] = RAISED
+        self.DM['state'] = NORMAL
+        self.DS['state'] = NORMAL
+        self.CO['state'] = NORMAL
         self.DS.delete('1.0','end+1c')
-        self.DS.insert(tk.END, 'Press "Start Console" to activate the program.')
         self.CO.delete('1.0','end+1c')
+        self.DS.insert(tk.END, 'Press \n"Start \nConsole" \nto activate \nthe program.')
+        self.DS['state'] = DISABLED
+        self.c_print("Welcome to Bernie's FacePI!")
         self.mode = 'Console'
 
     def activate(self):
@@ -202,8 +226,8 @@ class Window:
         self.QU = tk.Button(self.control_panel, text='Quit', bg='gainsboro', fg='black', height=2)
         self.QU.grid(column=3, row=0, sticky=self.align_mode)
         self.TM = tk.Label(self.control_panel, text='Made by Bernie', fg='steelblue', bg='lightgrey', font=("Gabriola", 17))
-        self.TM.grid(column=4, row=0, ipadx = 30, sticky=E)
-        self.DS = tk.Text(self.description, width=10, height=10, fg='darkcyan', font=("Centaur", 10, "bold"))
+        self.TM.grid(column=4, row=0, ipadx = 10, sticky=E)
+        self.DS = tk.Text(self.description, width=10, height=10, fg='goldenrod', font=("Arial", 8))
         self.DS.grid(column=0, row=0, sticky=self.align_mode, rowspan=2)
         self.CO = tk.Text(self.description, width=40, height=8, fg = 'dimgrey', font=("Calibri", 12))
         self.CO.grid(column=1, row=0, sticky=self.align_mode)
@@ -211,7 +235,8 @@ class Window:
         self.CP.grid(column=1, row=1, sticky=self.align_mode)
         self.reset()
         
-
+    #    self.CO['state'] = DISABLED
+    #    self.DS['state'] = DISABLED
         
         define_layout(self.window, cols=1, rows=1)
 
@@ -224,5 +249,5 @@ class Window:
         self.CP.bind('<Return>', self.get_text)
     #    self.window.bind('<F4>', self.toggle_fullScreen)
     #    self.window.bind('<Escape>', self.quit)
-        self.window.bind('<Configure>', lambda event, obj=self.description :self.get_size(event, obj))
+    #    self.window.bind('<Configure>', lambda event, obj=self.description :self.get_size(event, obj))
         self.window.mainloop()

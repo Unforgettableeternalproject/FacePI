@@ -181,7 +181,7 @@ class Window:
         if quit_check:
             self.window.after(500)
             self.window.destroy()	
-            os._exit()
+            os._exit(0)
             
 
     def console(self):

@@ -114,6 +114,6 @@ class FacePI:
         if(ip != ''):
             imagepath = ip
         else:
-            imagepath = CV.show_opencv()
+            imagepath = CV.show_opencv(" Smile :).")
         # json_face_detect = classes.ClassFaceAPI.Face().detectLocalImage(imagepath)
         self.Identify(imagepath)

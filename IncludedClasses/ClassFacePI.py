@@ -8,6 +8,7 @@ class Face:
         self.attribute = []
 
     def detectLocalImage(self, imagepath, onlyDt = False):
+        self.attribute = []
         headers = {
             'Content-Type': 'application/octet-stream',
             'Ocp-Apim-Subscription-Key': self.config.readConfig()['api_key'],

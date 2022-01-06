@@ -1,12 +1,11 @@
 import tkinter as tk
-import platform, sys, time, os, cv2
-from typing import Collection
+import os
 import IncludedClasses.MainProgram as Main
 import IncludedClasses.ClassOpenCV as CV
 import IncludedClasses.ClassFacePI as PI
 import IncludedClasses.ClassConfig as Config
 from tkinter import messagebox
-from tkinter.constants import DISABLED, E, NORMAL, RAISED, SUNKEN, W
+from tkinter.constants import DISABLED, E, NORMAL, RAISED, SUNKEN
 
 class Window:
 
@@ -41,6 +40,46 @@ class Window:
             self.CO['state'] = DISABLED
             self.CO.see("end")
 
+    def get_person_data(self):
+        def chkdata():
+            if(name.get() == "" or description.get() == ""):
+                if(name.get() == "" and not description.get() == ""): alertmsg.set("Please enter your name.")
+                elif(description.get() == "" and not name.get() == ""): alertmsg.set("Please enter description for yourself.")
+                else: alertmsg.set("Please enter both of them.")
+            else:
+                    prompt.destroy()
+                    prompt.update()
+                    self.FacePI.Train(description.get(), name.get())
+                    self.c_print('\n' + self.FacePI.result, 'instant')
+                    self.c_print('\n>_Returning to master console...\n')
+                    self.CP['state'] = NORMAL
+        prompt = tk.Toplevel()
+        prompt.iconbitmap(self.basepath+'/Icon.ico')
+        prompt.title("Person Data Fetcher")
+        prompt.geometry('350x180')
+        prompt.resizable(0,0)
+        Cs = tk.Frame(prompt, width=200, height=200)
+        Cs.pack()
+        
+        name = tk.StringVar()
+        description = tk.StringVar()
+        alertmsg = tk.StringVar()
+        inputlabel1 = tk.Label(Cs, text="Enter Your Name(In English):")
+        userkeyin1 = tk.Entry(Cs, textvariable=name)
+        inputlabel2 = tk.Label(Cs, text="Enter description for yourself(Ex: Sample 1): ")
+        userkeyin2 = tk.Entry(Cs, textvariable=description)
+        yrbtn = tk.Button(Cs, text="Confirm", width=20, bg='lightslategrey', fg='gainsboro')
+        msglabel = tk.Label(Cs, textvariable=alertmsg, fg ='maroon')
+        inputlabel1.pack()
+        userkeyin1.pack()
+        inputlabel2.pack()
+        userkeyin2.pack()
+        yrbtn.pack()
+        msglabel.pack()
+        
+        yrbtn['command'] = chkdata
+        
+        prompt.mainloop()
 
     def get_imagepath(self, mode):
         def chkpath():
@@ -56,21 +95,23 @@ class Window:
                     prompt.destroy()
                     prompt.update()
                     self.FacePI.Signin(path.get())
-                    self.c_print('\n' + self.FacePI.result, 'instant')
+                    for i in self.FacePI.result:
+                        self.c_print('\n' + i, 'instant')
                     self.c_print('\n>_Returning to debug console...\n')
                     self.CP['state'] = NORMAL
         prompt = tk.Toplevel()
         prompt.iconbitmap(self.basepath+'/Icon.ico')
         prompt.title("Image Path Fetcher")
         prompt.geometry('350x150')
+        prompt.resizable(0,0)
         Cs = tk.Frame(prompt, width=200, height=200)
         Cs.pack()
         path = tk.StringVar()
         alertmsg = tk.StringVar()
         inputlabel = tk.Label(Cs, text="Enter Image Path(URL):")
         userkeyin = tk.Entry(Cs, textvariable=path)
-        yrbtn = tk.Button(Cs, text="Confirm", width=20)
-        msglabel = tk.Label(Cs, textvariable=alertmsg)
+        yrbtn = tk.Button(Cs, text="Confirm", width=20, bg='lightslategrey', fg='gainsboro')
+        msglabel = tk.Label(Cs, textvariable=alertmsg, fg ='maroon')
         inputlabel.pack()
         userkeyin.pack()
         yrbtn.pack()
@@ -83,30 +124,32 @@ class Window:
     def get_size(self, event, obj=''):
         trg_obj = self.window if obj == '' else obj
         self.w, self.h = trg_obj.winfo_width(), trg_obj.winfo_height()
-#        print(f'\r{(self.w, self.h)}', end='')
 
     def get_text(self, event):   
         self.anwser = self.CP.get(1.0, tk.END + "-1c")
+        if(len(self.anwser) > 0 and self.anwser[0] == '\n'): self.anwser = self.anwser[1:]
         self.CP.delete('1.0','end')
         self.CP['state'] = DISABLED
         self.typing = False
-    #    self.CO.insert(tk.END, '\n' + self.anwser + '\n' + self.mode)
+
         if(self.mode == 'Console'):
             if(self.anwser == 'sign_in'):
                 self.c_print('\n>_Initializing Sign In protocol...', 'instant')
                 self.FacePI.Signin('')
-                self.c_print('\n' + self.FacePI.result, 'instant')
+                for i in self.FacePI.result:
+                    self.c_print('\n' + i, 'instant')
                 self.c_print('\n>_Returning to master console...\n')
             elif(self.anwser == 'train'):
                 self.c_print('\n>_Initializing Train protocol...', 'instant')
-                self.FacePI.Train()
+        #        self.FacePI.Train()
+                self.get_person_data()
                 self.c_print('\n>_Returning to master console...\n')
             else:
                 self.c_print('\n>_Invaild command!\n')
         elif(self.mode == 'Debug'):
             if(self.anwser == 'f_dt'):
                 self.c_print('\n>_Preparing for snapshot capture...', 'instant')
-                self.detect.detectLocalImage(CV.show_opencv())
+                self.detect.detectLocalImage(CV.show_opencv(' Smile :)'))
                 self.c_print('\n>_Returning to debug console...\n')
             elif(self.anwser == 'f_id_local'):
                 self.c_print('\n>_Require image path: ')
@@ -117,7 +160,7 @@ class Window:
             elif(self.anwser == 'p_json'):
                 self.c_print('\n>_Printing Json File (config.json):\n', 'instant')
                 self.window.after(200)
-                self.c_print(f"{self.config.readConfig()['api_key']}\n{self.config.readConfig()['host']}\n{self.config.readConfig()['confidence']}\n{self.config.readConfig()['title']}\n{self.config.readConfig()['personGroupName']}\n{self.config.readConfig()['personGroupID']}")
+                self.c_print(f">_API Key:\n>_{self.config.readConfig()['api_key']}\n>_Host:\n>_{self.config.readConfig()['host']}\n>_Default Confidence:\n>_{self.config.readConfig()['confidence']}\n>_Default Person Group Name:\n>_{self.config.readConfig()['personGroupName']}\n>_Default Person Group ID:\n>_{self.config.readConfig()['personGroupID']}")
             elif(self.anwser == 'lol'):
                 self.c_print('\n>_Bernie is the developer of this program.')
             else:
@@ -133,18 +176,12 @@ class Window:
             return 0
         self.CP['state'] = NORMAL
 
-    #def toggle_fullScreen(self, event):
-    #    self.is_windows = lambda : 1 if platform.system() == 'Windows' else 0
-
-    #    self.isFullScreen = not self.isFullScreen
-    #    self.window.attributes("-fullscreen" if self.is_windows() else "-zoomed", self.isFullScreen)
-
     def quit(self):
         quit_check = messagebox.askokcancel('Notification', 'Do you want to quit?')
         if quit_check:
-            self.c_print('\n>_Quitting the program...')
-            self.c_print('\nProgram Ended.')
+            self.window.after(500)
             self.window.destroy()	
+            os._exit()
             
 
     def console(self):
@@ -161,8 +198,6 @@ class Window:
         self.DS['state'] = DISABLED
         self.c_print("Awaiting command...")
         self.mode = 'Console'
-
-        
 
     def debug_mode(self):
         self.answer = ''
@@ -234,9 +269,6 @@ class Window:
         self.CP = tk.Text(self.description, width=40, height=2, fg = 'black', font=("Calibri", 12))
         self.CP.grid(column=1, row=1, sticky=self.align_mode)
         self.reset()
-        
-    #    self.CO['state'] = DISABLED
-    #    self.DS['state'] = DISABLED
         
         define_layout(self.window, cols=1, rows=1)
 

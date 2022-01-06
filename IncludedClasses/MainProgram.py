@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os, time
-import cv2
 from cv2 import waitKey
 import urllib.parse, urllib.error
 import IncludedClasses.ClassFacePI as PI
@@ -24,6 +23,7 @@ class FacePI:
         self.result = ''
 
     def Train(self, userData = None, personname = None):
+        self.result = ''
         jpgimagepaths = []
         for i in range(3):
             jpgimagepath = CV.show_opencv(hint=" (Picture No. " + str(i + 1) + " )")
@@ -53,9 +53,10 @@ class FacePI:
         personAPI.add_personimages(self.config.readConfig()['personGroupID'], personname, userData, jpgtrainpaths)
         personGroupapi = PG.PersonGroup()
         personGroupapi.train_personGroup()
+        self.result = '>_' + f"{personname} successfully trained!"
 
     def Identify(self, pictureurl):
-        self.result = ''
+        self.result = []
         start = int(round(time.time() * 1000))
         print("Start estimating [\"identify\"]")
         faceApi = PI.Face()
@@ -93,18 +94,18 @@ class FacePI:
         for identifyface in identifiedfaces:
             if "person" not in identifyface:
                 print("identifyface=", identifyface)
-                self.result = "Can't identify the faces, please do training first."
+                self.result.append('>_' + "Can't identify the face, please do training first.")
             else:
                 name = identifyface["person"]["name"]
                 confidence = float(identifyface["confidence"])
                 if confidence >= 0.9:
-                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with SUCCULENT result."
+                    self.result.append('>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with SUCCULENT result.")
                 elif confidence >= 0.8:
-                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with Great result."
+                    self.result.append('>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with Great result.")
                 elif confidence >= 0.7:
-                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with good result."
+                    self.result.append('>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]\n" + ">_Estimation ended with good result.")
                 else:
-                    self.result = '>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]"
+                    self.result.append('>_' + name + " signed in successfully. " + f"\n>_[With a Confidence of {confidence}]")
 
     def Signin(self, ip):
         if(ip != ''):

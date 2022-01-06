@@ -155,7 +155,9 @@ class Window:
         elif(self.mode == 'Debug'):
             if(self.anwser == 'f_dt'):
                 self.c_print('\n>_Preparing for snapshot capture...', 'instant')
-                self.detect.detectLocalImage(CV.show_opencv(' Smile :)'))
+                self.detect.detectLocalImage(CV.show_opencv(' Smile :)'), True)
+                for i in self.detect.attribute:
+                    self.c_print('\n' + i, 'instant')
                 self.c_print('\n>_Returning to debug console...\n')
             elif(self.anwser == 'f_id_local'):
                 self.c_print('\n>_Require image path: ')

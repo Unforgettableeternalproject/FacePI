@@ -1,12 +1,13 @@
 import http.client, urllib.request, urllib.parse, urllib.error, json
-import urllib, http, json, time, sys
+import urllib, http, json, time, sys, os
 import IncludedClasses.ClassConfig
 
 class Face:
     def __init__(self):
         self.config = IncludedClasses.ClassConfig.Config()
+        self.attribute = []
 
-    def detectLocalImage(self, imagepath):
+    def detectLocalImage(self, imagepath, onlyDt = False):
         headers = {
             'Content-Type': 'application/octet-stream',
             'Ocp-Apim-Subscription-Key': self.config.readConfig()['api_key'],
@@ -36,7 +37,10 @@ class Face:
             conn.close()
 
             print("detectLocalImage:", f"{imagepath} detected {len(json_face_detect)} people.")
-
+            self.attribute.append('>_' + f"Detected {len(json_face_detect)} people(person).")
+            for detectface in json_face_detect:
+                self.attribute.append('>_' + "Person No." + str(len(self.attribute)) + ":\n>_Gender: " + detectface['faceAttributes']['gender'] + ", age: " + str(detectface['faceAttributes']['age']) + ".")
+            if(onlyDt): os.remove(imagepath)
             return json_face_detect
         except Exception as e:
             print("[Errno {0}]Connection Failed, Please check your Internet Connection. {1}".format(e.errno, e.strerror))

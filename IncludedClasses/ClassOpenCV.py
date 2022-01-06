@@ -1,6 +1,6 @@
 import os
 import time
-from PIL import Image, ImageDraw, ImageFont, ImageTk
+from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 import IncludedClasses.ClassConfig

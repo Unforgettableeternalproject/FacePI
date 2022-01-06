@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os, time
-from cv2 import waitKey
 import urllib.parse, urllib.error
 import IncludedClasses.ClassFacePI as PI
 import IncludedClasses.ClassOpenCV as CV

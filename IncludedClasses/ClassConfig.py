@@ -1,4 +1,4 @@
-import sys, os, json
+import os, json
 
 class Config:
 

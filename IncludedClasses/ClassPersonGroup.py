@@ -1,4 +1,4 @@
-import http.client, urllib.request, urllib.parse, urllib.error, base64, json
+import http.client, urllib.request, urllib.parse, urllib.error, json
 import IncludedClasses.ClassConfig
 config = IncludedClasses.ClassConfig.Config().readConfig()
 

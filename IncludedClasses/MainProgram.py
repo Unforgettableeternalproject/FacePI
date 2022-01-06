@@ -71,10 +71,14 @@ class FacePI:
 
 
         faceids = []
-        for detectface in detectfaces:
-            print("Identified FaceId = ", detectface["faceId"])
-            faceids.append(detectface["faceId"])
-
+        try:
+            for detectface in detectfaces:
+                print("Identified FaceId = ", detectface["faceId"])
+                faceids.append(detectface["faceId"])
+        except Exception as e:
+            self.result = e
+            return
+            
         print("Identify.detectfaces=", detectfaces)
 
         identifiedfaces = faceApi.identify(faceids[:10], self.config.readConfig()["personGroupID"])

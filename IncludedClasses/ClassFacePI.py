@@ -44,35 +44,35 @@ class Face:
     def detectImageUrl(self, imageurl):
         headers = {
             # Request headers
-            'Content-Type': 'application/octet-stream',
-            'Ocp-Apim-Subscription-Key': self.config.readConfig()['api_key'],
+            "Content-Type": "application/json",
+            "Ocp-Apim-Subscription-Key": self.config.readConfig()["api_key"],
         }
 
-        params = urllib.parse.urlencode({
-            # Request parameters
-            'returnFaceId': 'true',
-            'returnFaceLandmarks': 'false',
-            'returnFaceAttributes': 'age,gender',
-            #'recognitionModel': 'recognition_04',
-            'returnRecognitionModel': 'false',
-            'detectionModel': 'detection_01',
-            'faceIdTimeToLive': '86400',
-        })
+        params = urllib.parse.urlencode(
+            {
+                # Request parameters
+                "returnFaceId": "true",
+                "returnFaceLandmarks": "false",
+                "returnFaceAttributes": "age,gender",
+                #'recognitionModel': 'recognition_04',
+                "returnRecognitionModel": "false",
+                "detectionModel": "detection_01",
+                "faceIdTimeToLive": "86400",
+            }
+        )
         #'age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure'
-        print('imageurl=', imageurl)
+        print("imageurl=", imageurl)
         requestbody = '{"url": "' + imageurl + '"}'
         try:
-            conn = http.client.HTTPSConnection(self.config.readConfig()['host'])
-            conn.request("POST", "/face/v1.0/detect?%s" % params, requestbody,
-                         headers)
+            conn = http.client.HTTPSConnection(self.config.readConfig()["host"])
+            conn.request("POST", "/face/v1.0/detect?%s" % params, requestbody, headers)
             response = conn.getresponse()
             data = response.read()
-            json_face_detect = json.loads(str(data, 'UTF-8'))
-            print("detectLocalImage.faces=", json_face_detect)
+            json_face_detect = json.loads(str(data, "UTF-8"))
+            print("detectImageUrl.faces=", json_face_detect)
             conn.close()
 
-            print("detectImageUrl:",
-                f"{imageurl} detected {len(json_face_detect)} people(person)")
+            print("detectImageUrl:", f"{imageurl} detected {len(json_face_detect)} people(person)")
             return json_face_detect
             
         except Exception as e:

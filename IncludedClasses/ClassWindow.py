@@ -41,6 +41,9 @@ class Window:
             self.CO.see("end")
 
     def get_person_data(self):
+        def disable_event():
+            pass
+        
         def chkdata():
             if(name.get() == "" or description.get() == ""):
                 if(name.get() == "" and not description.get() == ""): alertmsg.set("Please enter your name.")
@@ -78,10 +81,13 @@ class Window:
         msglabel.pack()
         
         yrbtn['command'] = chkdata
-        
+        prompt.protocol("WM_DELETE_WINDOW", disable_event)
         prompt.mainloop()
 
     def get_imagepath(self, mode):
+        def disable_event():
+            pass
+        
         def chkpath():
             if(path.get() == ""):
                 if(mode == 'Local'): alertmsg.set("Please enter a image path.")
@@ -118,7 +124,7 @@ class Window:
         msglabel.pack()
         
         yrbtn['command'] = chkpath
-        
+        prompt.protocol("WM_DELETE_WINDOW", disable_event)
         prompt.mainloop()
 
     def get_size(self, event, obj=''):
@@ -229,7 +235,7 @@ class Window:
         self.mode = 'Console'
 
     def activate(self):
-
+        
         def define_layout(obj, cols=1, rows=1):
             def method(trg, col, row):
                 [ trg.columnconfigure(c, weight=1)  for c in range(col) ]  

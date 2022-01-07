@@ -1,6 +1,5 @@
 import tkinter as tk
 import os
-from typing import ValuesView
 import IncludedClasses.MainProgram as Main
 import IncludedClasses.ClassOpenCV as CV
 import IncludedClasses.ClassFacePI as PI

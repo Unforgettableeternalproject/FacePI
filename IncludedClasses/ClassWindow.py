@@ -216,6 +216,7 @@ class Window:
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[0])
         self.DS['state'] = DISABLED
+        self.CP['state'] = NORMAL
         self.c_print("Awaiting command...")
         self.mode = 'Console'
 
@@ -231,6 +232,7 @@ class Window:
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, self.commandString[1])
         self.DS['state'] = DISABLED
+        self.CP['state'] = NORMAL
         self.c_print("Awaiting command (Debug Mode Activated)...")
         self.mode = 'Debug'
     
@@ -245,6 +247,7 @@ class Window:
         self.CO.delete('1.0','end+1c')
         self.DS.insert(tk.END, 'Press \n"Start \nConsole" \nto activate \nthe program.')
         self.DS['state'] = DISABLED
+        self.CP['state'] = DISABLED
         self.c_print("Welcome to Bernie's FacePI!")
         self.mode = 'Console'
 
